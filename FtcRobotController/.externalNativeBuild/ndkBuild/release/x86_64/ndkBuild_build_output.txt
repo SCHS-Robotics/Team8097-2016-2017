@@ -1,0 +1,4 @@
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/release/lib/x86_64/*
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/release/lib/x86_64/gdbserver
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/release/lib/x86_64/gdb.setup
+/Users/ryannemiroff/Android/sdk/ndk-bundle/build/core/build-all.mk:89: Android NDK: WARNING: There are no modules to build in this project!    

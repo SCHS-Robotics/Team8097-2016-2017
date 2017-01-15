@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/entire_screen"
     android:layout_width="match_parent"
@@ -157,11 +158,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             android:layout_above="@+id/textGamepad1"
             android:layout_below="@+id/textOpMode">
 
-            <LinearLayout
+            <org.opencv.android.JavaCameraView
                 android:id="@+id/cameraMonitorViewId"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" />
+                android:visibility="gone"
+                opencv:camera_id="any"
+                opencv:show_fps="true" />
 
             <!-- When visible, the error message will overlay and thus partially
                  obscure part of the camera monitor. We make this trade off so as to
@@ -225,5 +228,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         android:id="@+id/webViewBlocksRuntime"
         android:layout_width="1dp"
         android:layout_height="1dp" />
-
 </LinearLayout>

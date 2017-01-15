@@ -1,0 +1,16 @@
+Executable : /Users/ryannemiroff/Android/sdk/ndk-bundle/ndk-build
+arguments : 
+NDK_PROJECT_PATH=null
+APP_BUILD_SCRIPT=/Users/ryannemiroff/Downloads/OpenCV-android-sdk/sdk/native/jni/OpenCV.mk
+APP_ABI=mips
+NDK_ALL_ABIS=mips
+NDK_DEBUG=1
+APP_PLATFORM=android-19
+NDK_OUT=/Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/obj
+NDK_LIBS_OUT=/Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib
+APP_SHORT_COMMANDS=false
+LOCAL_SHORT_COMMANDS=false
+-B
+-n
+jvmArgs : 
+

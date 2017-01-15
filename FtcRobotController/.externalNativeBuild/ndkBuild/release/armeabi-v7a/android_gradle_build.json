@@ -1,0 +1,10 @@
+{
+  "buildFiles": [
+    "/Users/ryannemiroff/Downloads/OpenCV-android-sdk/sdk/native/jni/OpenCV.mk"
+  ],
+  "cleanCommands": [],
+  "libraries": {},
+  "toolchains": {},
+  "cFileExtensions": [],
+  "cppFileExtensions": []
+}

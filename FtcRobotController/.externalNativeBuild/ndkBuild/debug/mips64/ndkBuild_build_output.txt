@@ -1,0 +1,10 @@
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/*
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/gdbserver
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/gdb.setup
+mkdir -p /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64
+echo [mips64] "Gdbserver      ": "[mips64el-linux-android] /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/gdbserver"
+install -p /Users/ryannemiroff/Android/sdk/ndk-bundle/prebuilt/android-mips64/gdbserver/gdbserver /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/gdbserver
+echo [mips64] "Gdbsetup       ": "/Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/gdb.setup"
+echo "set solib-search-path /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/obj/local/mips64" > /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/gdb.setup
+echo "directory /Users/ryannemiroff/Android/sdk/ndk-bundle/platforms/android-21/arch-mips64/usr/include /Users/ryannemiroff/Android/sdk/ndk-bundle/sources/cxx-stl/system" >> /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/mips64/gdb.setup
+/Users/ryannemiroff/Android/sdk/ndk-bundle/build/core/build-all.mk:89: Android NDK: WARNING: There are no modules to build in this project!    

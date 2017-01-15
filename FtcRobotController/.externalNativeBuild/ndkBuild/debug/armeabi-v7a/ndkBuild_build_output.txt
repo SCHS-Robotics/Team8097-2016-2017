@@ -1,0 +1,10 @@
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/*
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdbserver
+rm -f /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup
+mkdir -p /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a
+echo [armeabi-v7a] "Gdbserver      ": "[arm-linux-androideabi] /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdbserver"
+install -p /Users/ryannemiroff/Android/sdk/ndk-bundle/prebuilt/android-arm/gdbserver/gdbserver /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdbserver
+echo [armeabi-v7a] "Gdbsetup       ": "/Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup"
+echo "set solib-search-path /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/obj/local/armeabi-v7a" > /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup
+echo "directory /Users/ryannemiroff/Android/sdk/ndk-bundle/platforms/android-19/arch-arm/usr/include /Users/ryannemiroff/Android/sdk/ndk-bundle/sources/cxx-stl/system" >> /Users/ryannemiroff/AndroidStudioProjects/Team8097-2016-2017/FtcRobotController/build/intermediates/ndkBuild/debug/lib/armeabi-v7a/gdb.setup
+/Users/ryannemiroff/Android/sdk/ndk-bundle/build/core/build-all.mk:89: Android NDK: WARNING: There are no modules to build in this project!    
