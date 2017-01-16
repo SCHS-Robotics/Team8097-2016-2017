@@ -123,7 +123,7 @@ public class VuforiaNavigation extends LinearOpMode {
          * and paste it in to your code as the value of the 'vuforiaLicenseKey' field of the
          * {@link Parameters} instance with which you initialize Vuforia.
          */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraView);
         parameters.vuforiaLicenseKey = "AfETeE7/////AAAAGcBSlFPjbEYup5r6j4nd3xR5rDYJRxPTtQnQaN0lVr/fhPvFTj/QJwkMGO0E62ymdqod1UOTD5GUikXWz53zsS3t9Y2GFlM4Vbkni9QWdETAX8sWy2BYsSCPBHsITUSJ9STpbeq4YpWiiooMdN5COh8S3SkmpuvTjPxB2vARpxPk1yD6B6+Icy4RN1ODtWnkzsO9UKmZP/q3iXFi45lwrkqPIJ2CyRK02kQtPitKatybRLPRoKIDczcEicnhkhdoUmqdgdHmA8uTnsM6Z39WMR+5yf8FhqvvB7/QvjwRdEjKaxXUFzV5gWoFtdXwlDuOR+Q2vCvyIS+HP6/5EAqi+/qrOzm697txBrSzh/r/cXkR";
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         parameters.useExtendedTracking = false;

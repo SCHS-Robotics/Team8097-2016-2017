@@ -122,7 +122,7 @@ public class ConceptVuforiaNavigation extends LinearOpMode {
          * and paste it in to your code as the value of the 'vuforiaLicenseKey' field of the
          * {@link Parameters} instance with which you initialize Vuforia.
          */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraView);
         parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
