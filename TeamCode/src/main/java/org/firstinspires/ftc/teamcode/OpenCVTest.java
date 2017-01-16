@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.hardware.Camera;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -35,6 +36,7 @@ public class OpenCVTest extends BaseOpMode implements CameraBridgeViewBase.CvCam
         FtcRobotControllerActivity.mOpenCvCameraView.setVisibility(View.VISIBLE);
         FtcRobotControllerActivity.mOpenCvCameraView.setCvCameraViewListener(this);
         FtcRobotControllerActivity.mOpenCvCameraView.setOnTouchListener(this);
+        FtcRobotControllerActivity.textDataLog.setVisibility(View.GONE);
         allInit();
         waitForStart();
         while (opModeIsActive()) {

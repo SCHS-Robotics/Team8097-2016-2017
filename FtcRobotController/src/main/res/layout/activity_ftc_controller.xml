@@ -40,10 +40,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:orientation="vertical"
     tools:context="org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity">
 
+    <org.opencv.android.JavaCameraView
+        android:id="@+id/cameraView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        opencv:camera_id="any"
+        opencv:show_fps="true" />
+
     <LinearLayout
         android:id="@+id/entire_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/transparent"
         android:orientation="vertical">
 
         <!-- black bar on top -->
@@ -236,12 +245,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             android:layout_height="1dp" />
 
     </LinearLayout>
-
-    <org.opencv.android.JavaCameraView
-        android:id="@+id/cameraView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        opencv:camera_id="any"
-        opencv:show_fps="true" />
 </FrameLayout>

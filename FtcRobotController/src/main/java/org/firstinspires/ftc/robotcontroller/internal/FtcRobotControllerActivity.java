@@ -100,16 +100,27 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 import org.firstinspires.inspection.RcInspectionActivity;
 import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class FtcRobotControllerActivity extends Activity { //implements CameraBridgeViewBase.CvCameraViewListener2, View.OnTouchListener {
+public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implements CameraBridgeViewBase.CvCameraViewListener2, View.OnTouchListener {
 
     public static final String TAG = "RCActivity";
 
@@ -138,9 +149,9 @@ public class FtcRobotControllerActivity extends Activity { //implements CameraBr
     protected TextView textErrorMessage;
     protected ImmersiveMode immersion;
 
-    public static CameraBridgeViewBase mOpenCvCameraView;
+    public static JavaCameraView mOpenCvCameraView;
 
-    protected static TextView textDataLog;
+    public static TextView textDataLog;
     public static Button calibrateGroundButt;
     public static Button calibrateTapeButt;
     public static boolean calibrateTape;
@@ -245,20 +256,17 @@ public class FtcRobotControllerActivity extends Activity { //implements CameraBr
             public void onGlobalLayout() {
                 if (FtcRobotControllerActivity.this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                     if (n1 == 1) {
-                        Log.d("layout", "saving layout");
                         saveLayout(entireScreenLayout);
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     }
                     n1++;
                 } else if (FtcRobotControllerActivity.this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     if (n2 == 0) {
-                        Log.d("layout", "initial restore");
                         restoreLayout(entireScreenLayout);
                         entireScreenLayout.setPivotX((entireScreenLayout.getRight() - entireScreenLayout.getLeft()) / 2);
                         entireScreenLayout.setPivotY((entireScreenLayout.getRight() - entireScreenLayout.getLeft()) / 2);
                         entireScreenLayout.setRotation(-90);
                     } else if (n2 >= 1) {
-                        Log.d("layout", "restoring");
                         restoreLayout(entireScreenLayout);
                     }
                     n2++;
@@ -297,14 +305,13 @@ public class FtcRobotControllerActivity extends Activity { //implements CameraBr
         dimmer = new Dimmer(this);
         dimmer.longBright();
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.cameraView);
+        mOpenCvCameraView = (JavaCameraView) findViewById(R.id.cameraView);
 
         //testing
 //        mOpenCvCameraView.setVisibility(View.VISIBLE);
 //        mOpenCvCameraView.setCvCameraViewListener(this);
 //        mOpenCvCameraView.setOnTouchListener(this);
         //testing
-
 
         textDataLog = (TextView) findViewById(R.id.textDataLog);
         calibrateGroundButt = (Button) findViewById(R.id.calibrateGroundButt);
@@ -545,6 +552,12 @@ public class FtcRobotControllerActivity extends Activity { //implements CameraBr
         mOpenCvCameraView.disableView();
         getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
         return true;
+    }
+
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        super.onOptionsMenuClosed(menu);
+        mOpenCvCameraView.enableView();
     }
 
     @Override
@@ -894,7 +907,7 @@ public class FtcRobotControllerActivity extends Activity { //implements CameraBr
 //            Core.inRange(mHsvMat, mLowerBound, mUpperBound, mMask);
 //            Imgproc.dilate(mMask, mDilatedMask, new Mat());
 //
-//            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+//            List<MatOfPoint> contours = new ArrayList<>();
 //
 //            Imgproc.findContours(mDilatedMask, contours, mHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 //
