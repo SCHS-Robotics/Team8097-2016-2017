@@ -11,21 +11,20 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.opencv.android.OpenCVLoader;
 
 import java.util.HashMap;
 
 public abstract class BaseOpMode extends LinearOpMode {
 
-    public final static double DEFAULT_FORWARD_SPEED = 1;
+    public final static double DEFAULT_FORWARD_SPEED = 0.7;
     public final static double DEFAULT_DIAGONAL_SPEED = 0.85;
-    public final static double DEFAULT_SIDEWAYS_SPEED = 1;
-    public final static double DEFAULT_SPIN_SPEED = 1;
+    public final static double DEFAULT_SIDEWAYS_SPEED = 0.7;
+    public final static double DEFAULT_SPIN_SPEED = 0.7;
 
-    public final static double TICKS_PER_CM_FORWARD = 53.6;
-    public final static double TICKS_PER_CM_SIDEWAYS = 72.0;
-    public final static double TICKS_PER_CM_DIAGONAL = 88.3;
-    public final static double TICKS_PER_DEGREE = 27.777;
+    public final static double TICKS_PER_CM_FORWARD = 53.6 / 1.5; //Divided by 1.5 because we switched from 60s to 40s
+    public final static double TICKS_PER_CM_SIDEWAYS = 72.0 / 1.5;
+    public final static double TICKS_PER_CM_DIAGONAL = 88.3 / 1.5;
+    public final static double TICKS_PER_DEGREE = 27.777 / 1.5;
 
     public final static double SERVO_POS_PER_DEGREE = 1.0 / 151.0;
 
