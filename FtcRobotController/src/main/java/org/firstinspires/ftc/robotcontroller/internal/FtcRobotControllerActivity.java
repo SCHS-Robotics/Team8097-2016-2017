@@ -100,6 +100,7 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import org.firstinspires.ftc.robotcore.internal.AppUtil;
 import org.firstinspires.inspection.RcInspectionActivity;
 import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -107,6 +108,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -114,13 +116,14 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implements CameraBridgeViewBase.CvCameraViewListener2, View.OnTouchListener {
+public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     public static final String TAG = "RCActivity";
 
@@ -310,7 +313,6 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
         //testing
 //        mOpenCvCameraView.setVisibility(View.VISIBLE);
 //        mOpenCvCameraView.setCvCameraViewListener(this);
-//        mOpenCvCameraView.setOnTouchListener(this);
         //testing
 
         textDataLog = (TextView) findViewById(R.id.textDataLog);
@@ -758,49 +760,12 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //        mBlobColorRgba = new Scalar(255);
 //        mBlobColorHsv = new Scalar(255);
 //        SPECTRUM_SIZE = new Size(200, 64);
-//        CONTOUR_COLOR = new Scalar(255, 0, 0, 255);
-//    }
+//        CONTOUR_COLOR = new Scalar(0, 0, 255, 255);//for red, CONTOUR_COLOR = new Scalar(255, 0, 0, 255); for blue
 //
-//    public void onCameraViewStopped() {
-//        mRgba.release();
-//    }
-//
-//    public boolean onTouch(View v, MotionEvent event) {
-//        int cols = mRgba.cols();
-//        int rows = mRgba.rows();
-//
-//        int xOffset = (mOpenCvCameraView.getWidth() - cols) / 2;
-//        int yOffset = (mOpenCvCameraView.getHeight() - rows) / 2;
-//
-//        int x = (int) event.getX() - xOffset;
-//        int y = (int) event.getY() - yOffset;
-//
-//        Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
-//
-//        if ((x < 0) || (y < 0) || (x > cols) || (y > rows)) return false;
-//
-//        Rect touchedRect = new Rect();
-//
-//        touchedRect.x = (x > 4) ? x - 4 : 0;
-//        touchedRect.y = (y > 4) ? y - 4 : 0;
-//
-//        touchedRect.width = (x + 4 < cols) ? x + 4 - touchedRect.x : cols - touchedRect.x;
-//        touchedRect.height = (y + 4 < rows) ? y + 4 - touchedRect.y : rows - touchedRect.y;
-//
-//        Mat touchedRegionRgba = mRgba.submat(touchedRect);
-//
-//        Mat touchedRegionHsv = new Mat();
-//        Imgproc.cvtColor(touchedRegionRgba, touchedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
-//
-//        // Calculate average color of touched region
-//        mBlobColorHsv = Core.sumElems(touchedRegionHsv);
-//        int pointCount = touchedRect.width * touchedRect.height;
-//        for (int i = 0; i < mBlobColorHsv.val.length; i++)
-//            mBlobColorHsv.val[i] /= pointCount;
-//
+//        mBlobColorHsv = new Scalar(0, 255, 255);//red, mBlobColorHsv = new Scalar(170, 255, 255) is blue
 //        mBlobColorRgba = converScalarHsv2Rgba(mBlobColorHsv);
 //
-//        Log.i(TAG, "Touched rgba color: (" + mBlobColorRgba.val[0] + ", " + mBlobColorRgba.val[1] +
+//        Log.i(TAG, "rgba color: (" + mBlobColorRgba.val[0] + ", " + mBlobColorRgba.val[1] +
 //                ", " + mBlobColorRgba.val[2] + ", " + mBlobColorRgba.val[3] + ")");
 //
 //        mDetector.setHsvColor(mBlobColorHsv);
@@ -808,11 +773,10 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //        Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 //
 //        mIsColorSelected = true;
+//    }
 //
-//        touchedRegionRgba.release();
-//        touchedRegionHsv.release();
-//
-//        return false; // don't need subsequent touch events
+//    public void onCameraViewStopped() {
+//        mRgba.release();
 //    }
 //
 //    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
@@ -829,6 +793,26 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //
 //            Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
 //            mSpectrum.copyTo(spectrumLabel);
+//
+//            double maxWidth = 0;
+//            double maxHeight = 0;
+//            for (MatOfPoint contour : mDetector.getContours()) {
+//                double left = contour.toArray()[0].x;
+//                double right = contour.toArray()[0].x;
+//                double top = contour.toArray()[0].y;
+//                double bottom = contour.toArray()[0].y;
+//                for (Point p : contour.toArray()) {
+//                    left = p.x < left ? p.x : left;
+//                    right = p.x > right ? p.x : right;
+//                    top = p.y < top ? p.y : top;
+//                    bottom = p.y > bottom ? p.y : bottom;
+//                }
+//                double width = right - left;
+//                double height = bottom - top;
+//                maxWidth = width > maxWidth ? width : maxWidth;
+//                maxHeight = height > maxHeight ? height : maxHeight;
+//            }
+//            Log.i("contourtest", "width: " + maxWidth + ", height: " + maxHeight);
 //        }
 //
 //        return mRgba;
@@ -849,7 +833,7 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //        // Minimum contour area in percent for contours filtering
 //        private static double mMinContourArea = 0.1;
 //        // Color radius for range checking in HSV color space
-//        private Scalar mColorRadius = new Scalar(25, 50, 50, 0);
+//        private Scalar mColorRadius = new Scalar(30, 100, 100, 0);
 //        private Mat mSpectrum = new Mat();
 //        private List<MatOfPoint> mContours = new ArrayList<MatOfPoint>();
 //
@@ -857,6 +841,8 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //        Mat mPyrDownMat = new Mat();
 //        Mat mHsvMat = new Mat();
 //        Mat mMask = new Mat();
+//        Mat mMask1 = new Mat();
+//        Mat mMask2 = new Mat();
 //        Mat mDilatedMask = new Mat();
 //        Mat mHierarchy = new Mat();
 //
@@ -865,8 +851,8 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //        }
 //
 //        public void setHsvColor(Scalar hsvColor) {
-//            double minH = (hsvColor.val[0] >= mColorRadius.val[0]) ? hsvColor.val[0] - mColorRadius.val[0] : 0;
-//            double maxH = (hsvColor.val[0] + mColorRadius.val[0] <= 255) ? hsvColor.val[0] + mColorRadius.val[0] : 255;
+//            double minH = hsvColor.val[0] - mColorRadius.val[0]; //(hsvColor.val[0] >= mColorRadius.val[0]) ? hsvColor.val[0] - mColorRadius.val[0] : 0;
+//            double maxH = hsvColor.val[0] + mColorRadius.val[0]; //(hsvColor.val[0] + mColorRadius.val[0] <= 255) ? hsvColor.val[0] + mColorRadius.val[0] : 255;
 //
 //            mLowerBound.val[0] = minH;
 //            mUpperBound.val[0] = maxH;
@@ -883,7 +869,11 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //            Mat spectrumHsv = new Mat(1, (int) (maxH - minH), CvType.CV_8UC3);
 //
 //            for (int j = 0; j < maxH - minH; j++) {
-//                byte[] tmp = {(byte) (minH + j), (byte) 255, (byte) 255};
+//                int minHPlusJ = (int) (minH + j);
+//                if (minHPlusJ < 0) {
+//                    minHPlusJ += 256;
+//                }
+//                byte[] tmp = {(byte) minHPlusJ, (byte) 255, (byte) 255};
 //                spectrumHsv.put(0, j, tmp);
 //            }
 //
@@ -904,7 +894,23 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //
 //            Imgproc.cvtColor(mPyrDownMat, mHsvMat, Imgproc.COLOR_RGB2HSV_FULL);
 //
-//            Core.inRange(mHsvMat, mLowerBound, mUpperBound, mMask);
+//            if (mLowerBound.val[0] < 0) {
+//                Scalar lowBound = new Scalar(mLowerBound.val[0] + 256, mLowerBound.val[1], mLowerBound.val[2], mLowerBound.val[3]);
+//                Scalar minBound = new Scalar(0, mLowerBound.val[1], mLowerBound.val[2], mLowerBound.val[3]);
+//                Scalar maxBound = new Scalar(255, mUpperBound.val[1], mUpperBound.val[2], mUpperBound.val[3]);
+//                Core.inRange(mHsvMat, minBound, mUpperBound, mMask1);
+//                Core.inRange(mHsvMat, lowBound, maxBound, mMask2);
+//                Core.bitwise_or(mMask2, mMask1, mMask);
+//            } else if (mUpperBound.val[0] > 255) {
+//                Scalar highBound = new Scalar(mUpperBound.val[0] - 256, mUpperBound.val[1], mUpperBound.val[2], mUpperBound.val[3]);
+//                Scalar minBound = new Scalar(0, mLowerBound.val[1], mLowerBound.val[2], mLowerBound.val[3]);
+//                Scalar maxBound = new Scalar(255, mUpperBound.val[1], mUpperBound.val[2], mUpperBound.val[3]);
+//                Core.inRange(mHsvMat, minBound, highBound, mMask1);
+//                Core.inRange(mHsvMat, mLowerBound, maxBound, mMask2);
+//                Core.bitwise_or(mMask2, mMask1, mMask);
+//            } else {
+//                Core.inRange(mHsvMat, mLowerBound, mUpperBound, mMask);
+//            }
 //            Imgproc.dilate(mMask, mDilatedMask, new Mat());
 //
 //            List<MatOfPoint> contours = new ArrayList<>();
