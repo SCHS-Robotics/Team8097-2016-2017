@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import android.view.View;
 
-import com.qualcomm.robotcore.eventloop.opmode.*;
-
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Core;
@@ -33,6 +31,11 @@ public class OpenCVTest extends BaseOpMode implements CameraBridgeViewBase.CvCam
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
 
+    private Scalar redHsv = new Scalar(0, 255, 255);
+    private Scalar blueHsv = new Scalar(170, 255, 255);
+    private Scalar redContrastRgb = new Scalar(0, 0, 255, 255);
+    private Scalar blueContrastRgb = new Scalar(255, 0, 0, 255);
+
     @Override
     public void runOpMode() throws InterruptedException {
         FtcRobotControllerActivity.mOpenCvCameraView.setVisibility(View.VISIBLE);
@@ -52,9 +55,10 @@ public class OpenCVTest extends BaseOpMode implements CameraBridgeViewBase.CvCam
         mBlobColorRgba = new Scalar(255);
         mBlobColorHsv = new Scalar(255);
         SPECTRUM_SIZE = new Size(200, 64);
-        CONTOUR_COLOR = new Scalar(0, 0, 255, 255);//for red, CONTOUR_COLOR = new Scalar(255, 0, 0, 255); for blue
 
-        mBlobColorHsv = new Scalar(0, 255, 255);//red, mBlobColorHsv = new Scalar(170, 255, 255) is blue
+        mBlobColorHsv = redHsv;
+        CONTOUR_COLOR = redContrastRgb;
+
         mBlobColorRgba = converScalarHsv2Rgba(mBlobColorHsv);
 
         mDetector.setHsvColor(mBlobColorHsv);
