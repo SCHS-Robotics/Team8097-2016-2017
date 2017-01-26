@@ -23,6 +23,16 @@ public class RedBeaconsAutonomous extends BeaconsAutonomous {
     }
 
     @Override
+    public void turn45ToBeacons() throws InterruptedException {
+        spinLeftDegrees(DEFAULT_SPIN_SPEED, 45);
+    }
+
+    @Override
+    public void turn45backStraight() throws InterruptedException {
+        spinRightDegrees(DEFAULT_SPIN_SPEED, 45);
+    }
+
+    @Override
     public void moveAcrossField(double power) {
         goDiagonalForwardLeft(power);
     }
@@ -44,7 +54,7 @@ public class RedBeaconsAutonomous extends BeaconsAutonomous {
 
     @Override
     public void fixPosForFindingTape() throws InterruptedException {
-        goBackwardDistance(DEFAULT_FORWARD_SPEED, 30);
+        goBackwardDistance(DEFAULT_FORWARD_SPEED, 5);
     }
 
     @Override

@@ -31,6 +31,8 @@ public class CompetitionTeleOp extends BaseOpMode {
     double leftLaunchTestingRpm;
     double rightLaunchTestingRpm;
 
+    double prevSpeed = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
         logData("Status", "Initialized");
@@ -73,6 +75,12 @@ public class CompetitionTeleOp extends BaseOpMode {
                 angle -= (currentAngle - 90);
                 if (magnitude > MIN_SPEED) {
                     goDirection(magnitude, angle);
+                } else if (prevSpeed > 0.5) {
+                    frontLeftMotor.setPower(frontLeftMotor.getPower() * 0.5);
+                    backLeftMotor.setPower(backLeftMotor.getPower() * 0.5);
+                    frontRightMotor.setPower(frontRightMotor.getPower() * 0.5);
+                    backRightMotor.setPower(backRightMotor.getPower() * 0.5);
+                    sleep(250);
                 } else {
                     stopRobot();
                 }

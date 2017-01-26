@@ -16,10 +16,10 @@ import java.util.HashMap;
 
 public abstract class BaseOpMode extends LinearOpMode {
 
-    public final static double DEFAULT_FORWARD_SPEED = 0.7;
+    public final static double DEFAULT_FORWARD_SPEED = 0.75;
     public final static double DEFAULT_DIAGONAL_SPEED = 0.85;
     public final static double DEFAULT_SIDEWAYS_SPEED = 0.7;
-    public final static double DEFAULT_SPIN_SPEED = 0.7;
+    public final static double DEFAULT_SPIN_SPEED = 0.75;
 
     public final static double TICKS_PER_CM_FORWARD = 53.6 / 1.5; //Divided by 1.5 because we switched from 60s to 40s
     public final static double TICKS_PER_CM_SIDEWAYS = 72.0 / 1.5;

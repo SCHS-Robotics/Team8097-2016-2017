@@ -743,6 +743,15 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
         }
     };
 
+    public final static Handler turnOnCameraView = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            mOpenCvCameraView.setVisibility(View.VISIBLE);
+            textDataLog.setVisibility(View.GONE);
+        }
+    };
+
+
     //testing
 //    private boolean mIsColorSelected = false;
 //    private Mat mRgba;

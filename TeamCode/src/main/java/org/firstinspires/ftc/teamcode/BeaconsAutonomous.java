@@ -10,7 +10,7 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
     double backTapeLowThreshold;
 
     final int closeToWallDistance = 25;//centimeters
-    final int beforePushingButtonDistance = 12;//centimeters
+    final int beforePushingButtonDistance = 10;//centimeters
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -27,13 +27,14 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
 
         if (shouldShoot()) {
             shoot();
-            goBackwardDistance(DEFAULT_FORWARD_SPEED, 98.0 / 2);
+            goBackwardDistance(DEFAULT_FORWARD_SPEED, 25);
             fixPosAfterShooting();
         } else {
-            moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 98.0 / 2);
+            moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 25);
         }
-        moveAlongStartWallDistance(DEFAULT_SIDEWAYS_SPEED, 98.0 / 2);
-        moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 98.0 / 2);
+        turn45ToBeacons();
+        moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 110);
+        turn45backStraight();
         goToBeaconWall(DEFAULT_SIDEWAYS_SPEED, closeToWallDistance);
         fixPosForFindingTape();
         findTapeInward();
@@ -45,7 +46,7 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
         moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 97);
         findTapeInward();
         alignWithWall();
-        goForwardDistance(0.4, 5);
+        goForwardDistance(0.4, 2);
         findTapeLeft();
         pushButton();
 
@@ -57,6 +58,10 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
     public abstract boolean shouldShoot();
 
     public abstract void fixPosAfterShooting() throws InterruptedException;
+
+    public abstract void turn45ToBeacons() throws InterruptedException;
+
+    public abstract void turn45backStraight() throws InterruptedException;
 
     public void goToBeaconWall(double speed, int cmFromWall) throws InterruptedException {
         sleep(250);
@@ -116,19 +121,19 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
             while (frontTapeSensor.alpha() < frontTapeLowThreshold && backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
                 logData("light", frontTapeSensor.alpha());
                 updateTelemetry();
-                goForward(0.2);
+                goForward(0.15);
             }
             if (frontTapeSensor.alpha() < frontTapeLowThreshold) {
                 while (frontTapeSensor.alpha() < frontTapeLowThreshold && opModeIsActive()) {
                     logData("light", frontTapeSensor.alpha());
                     updateTelemetry();
-                    moveLeftWheelsForward(0.2);
+                    moveLeftWheelsForward(0.15);
                 }
             } else if (backTapeSensor.alpha() < backTapeLowThreshold) {
                 while (backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
                     logData("light", frontTapeSensor.alpha());
                     updateTelemetry();
-                    moveRightWheelsForward(0.2);
+                    moveRightWheelsForward(0.15);
                 }
             }
         }
@@ -146,19 +151,19 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
             while (frontTapeSensor.alpha() < frontTapeLowThreshold && backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
                 logData("light", frontTapeSensor.alpha());
                 updateTelemetry();
-                goBackward(0.2);
+                goBackward(0.15);
             }
             if (frontTapeSensor.alpha() < frontTapeLowThreshold) {
                 while (frontTapeSensor.alpha() < frontTapeLowThreshold && opModeIsActive()) {
                     logData("light", frontTapeSensor.alpha());
                     updateTelemetry();
-                    moveLeftWheelsBackward(0.2);
+                    moveLeftWheelsBackward(0.15);
                 }
             } else if (backTapeSensor.alpha() < backTapeLowThreshold) {
                 while (backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
                     logData("light", frontTapeSensor.alpha());
                     updateTelemetry();
-                    moveRightWheelsBackward(0.2);
+                    moveRightWheelsBackward(0.15);
                 }
             }
         }

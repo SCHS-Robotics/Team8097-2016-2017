@@ -38,10 +38,8 @@ public class OpenCVTest extends BaseOpMode implements CameraBridgeViewBase.CvCam
 
     @Override
     public void runOpMode() throws InterruptedException {
-        FtcRobotControllerActivity.mOpenCvCameraView.setVisibility(View.VISIBLE);
+        FtcRobotControllerActivity.turnOnCameraView.obtainMessage().sendToTarget();
         FtcRobotControllerActivity.mOpenCvCameraView.setCvCameraViewListener(this);
-        FtcRobotControllerActivity.textDataLog.setVisibility(View.GONE);
-        allInit();
         waitForStart();
         while (opModeIsActive()) {
             idle();
@@ -56,8 +54,8 @@ public class OpenCVTest extends BaseOpMode implements CameraBridgeViewBase.CvCam
         mBlobColorHsv = new Scalar(255);
         SPECTRUM_SIZE = new Size(200, 64);
 
-        mBlobColorHsv = redHsv;
-        CONTOUR_COLOR = redContrastRgb;
+        mBlobColorHsv = blueHsv;
+        CONTOUR_COLOR = blueContrastRgb;
 
         mBlobColorRgba = converScalarHsv2Rgba(mBlobColorHsv);
 
