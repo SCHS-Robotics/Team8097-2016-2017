@@ -9,8 +9,8 @@ public class CalibrateServos extends BaseOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    double pos1 = leftFlapInitPos;
-    double pos2 = rightFlapInitPos;
+    double pos1 = leftLiftInitPos;
+    double pos2 = rightLiftInitPos;
     double pos3 = 0.5;
     double pos4 = 0.5;
 
@@ -60,9 +60,9 @@ public class CalibrateServos extends BaseOpMode {
                 if (pos4 - 0.002 >= 0)
                     pos4 -= 0.002;
             }
-            leftFlapServo.setPosition(pos1);
+            leftLiftServo.setPosition(pos1);
             logData("leftFlap", pos1);
-            rightFlapServo.setPosition(pos2);
+            rightLiftServo.setPosition(pos2);
             logData("rightFlap", pos2);
 //            launcherServo.setPosition(pos3);
 //            logData("launcher", pos3);

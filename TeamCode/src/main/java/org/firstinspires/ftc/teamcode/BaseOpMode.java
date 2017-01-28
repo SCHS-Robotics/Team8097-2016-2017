@@ -70,8 +70,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     double launcherServoInitPos = launcherServoAutoPos;
     double leftLiftInitPos = 0.636;
     double rightLiftInitPos = 0.210;
-    double leftLiftEndPos = 0.354;
-    double rightLiftEndPos = 0.664;
+    double leftLiftEndPos = 0.220;
+    double rightLiftEndPos = 0.600;
 
     int launchFarServoWaitTime = 23;//milliseconds
     int launchShortServoWaitTime = 13;//milliseconds

@@ -54,7 +54,7 @@ public class RedBeaconsAutonomous extends BeaconsAutonomous {
 
     @Override
     public void fixPosForFindingTape() throws InterruptedException {
-        goBackwardDistance(DEFAULT_FORWARD_SPEED, 5);
+//        goBackwardDistance(DEFAULT_FORWARD_SPEED, 5);
     }
 
     @Override

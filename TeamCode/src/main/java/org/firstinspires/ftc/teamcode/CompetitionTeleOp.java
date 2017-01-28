@@ -75,11 +75,13 @@ public class CompetitionTeleOp extends BaseOpMode {
                 angle -= (currentAngle - 90);
                 if (magnitude > MIN_SPEED) {
                     goDirection(magnitude, angle);
-                } else if (prevSpeed > 0.5) {
+                    prevSpeed = magnitude;
+                } else if (prevSpeed > 0.7) {
                     frontLeftMotor.setPower(frontLeftMotor.getPower() * 0.5);
                     backLeftMotor.setPower(backLeftMotor.getPower() * 0.5);
                     frontRightMotor.setPower(frontRightMotor.getPower() * 0.5);
                     backRightMotor.setPower(backRightMotor.getPower() * 0.5);
+                    prevSpeed = 0;
                     sleep(250);
                 } else {
                     stopRobot();
