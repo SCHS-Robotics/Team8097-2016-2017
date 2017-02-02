@@ -15,22 +15,19 @@ public class TestEncoders extends Autonomous {
         logData("Status", "Initialized");
         updateTelemetry();
 
-//        allInit();
-        backLeftMotor = hardwareMap.dcMotor.get("backLeft");
-        backRightMotor = hardwareMap.dcMotor.get("backRight");
-        frontLeftMotor = hardwareMap.dcMotor.get("frontLeft");
-        frontRightMotor = hardwareMap.dcMotor.get("frontRight");
+        allInit();
+//        backLeftMotor = hardwareMap.dcMotor.get("backLeft");
+//        backRightMotor = hardwareMap.dcMotor.get("backRight");
+//        frontLeftMotor = hardwareMap.dcMotor.get("frontLeft");
+//        frontRightMotor = hardwareMap.dcMotor.get("frontRight");
 
         waitForStart();
         runtime.reset();
-        resetWheelEncoders();
 
-        // run until the end of the match (driver presses STOP)
+        spinRightDegrees(DEFAULT_SPIN_SPEED, 360);
+
         while (opModeIsActive()) {
-            goRightDistance(DEFAULT_SIDEWAYS_SPEED, 1);
-            stopRobot();
-            sleep(500000);
-            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+            idle();
         }
     }
 }

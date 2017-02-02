@@ -63,6 +63,7 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void spinRightDegrees(double speed, double degrees) throws InterruptedException {
+        degrees -= 5 * (speed / DEFAULT_SPIN_SPEED);//Accounting for encoder/motor delay
         resetWheelEncoders();
         spinRight(speed);
         double totalEncoderTicks = degrees * TICKS_PER_DEGREE;
@@ -75,6 +76,7 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void goForwardDistance(double speed, double centimeters) throws InterruptedException {
+        centimeters -= 0 * (speed / DEFAULT_FORWARD_SPEED);//Accounting for encoder/motor delay
         resetWheelEncoders();
         goForward(speed);
         double totalEncoderTicks = centimeters * TICKS_PER_CM_FORWARD;
@@ -93,6 +95,7 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void goRightDistance(double speed, double centimeters) throws InterruptedException {
+        centimeters -= 0 * (speed / DEFAULT_SIDEWAYS_SPEED);//Accounting for encoder/motor delay
         resetWheelEncoders();
         goRight(speed);
         double totalEncoderTicks = centimeters * TICKS_PER_CM_SIDEWAYS;

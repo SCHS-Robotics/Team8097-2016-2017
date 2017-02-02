@@ -39,15 +39,15 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
         fixPosForFindingTape();//Does nothing right now
         findTapeInward();
         alignWithWall();
-        moveAlongBeaconWallDistance(0.4, 4);
-        findTapeOutward();
+        goForwardDistance(0.4, 4);//moveAlongBeaconWall
+        findTapeLeft();//findTapeOutward
         pushButton();
         moveAlongStartWallDistance(-DEFAULT_SIDEWAYS_SPEED, 12.5);
         moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 97);
         findTapeInward();
         alignWithWall();
-        moveAlongBeaconWallDistance(0.4, 4);
-        findTapeOutward();
+        goForwardDistance(0.4, 4);//moveAlongBeaconWall
+        findTapeLeft();//findTapeOutward
         pushButton();
 
         while (opModeIsActive()) {
