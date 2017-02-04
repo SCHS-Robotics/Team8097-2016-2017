@@ -36,34 +36,34 @@ public abstract class Autonomous extends BaseOpMode {
 
     public void moveLeftWheelsForward(double speed) {
         backLeftMotor.setPower(speed);
-        backRightMotor.setPower(0);
+        backRightMotor.setPower(speed * 0.7);
         frontLeftMotor.setPower(speed);
-        frontRightMotor.setPower(0);
+        frontRightMotor.setPower(speed * 0.7);
     }
 
     public void moveLeftWheelsBackward(double speed) {
         backLeftMotor.setPower(-speed);
-        backRightMotor.setPower(0);
+        backRightMotor.setPower(-speed * 0.7);
         frontLeftMotor.setPower(-speed);
-        frontRightMotor.setPower(0);
+        frontRightMotor.setPower(-speed * 0.7);
     }
 
     public void moveRightWheelsForward(double speed) {
-        backLeftMotor.setPower(0);
+        backLeftMotor.setPower(-speed * 0.7);
         backRightMotor.setPower(-speed);
-        frontLeftMotor.setPower(0);
+        frontLeftMotor.setPower(-speed * 0.7);
         frontRightMotor.setPower(-speed);
     }
 
     public void moveRightWheelsBackward(double speed) {
-        backLeftMotor.setPower(0);
+        backLeftMotor.setPower(speed * 0.7);
         backRightMotor.setPower(speed);
-        frontLeftMotor.setPower(0);
+        frontLeftMotor.setPower(speed * 0.7);
         frontRightMotor.setPower(speed);
     }
 
     public void spinRightDegrees(double speed, double degrees) throws InterruptedException {
-        degrees -= 5 * (speed / DEFAULT_SPIN_SPEED);//Accounting for encoder/motor delay
+        degrees -= 2 * (speed / DEFAULT_SPIN_SPEED);//Accounting for encoder/motor delay
         resetWheelEncoders();
         spinRight(speed);
         double totalEncoderTicks = degrees * TICKS_PER_DEGREE;
@@ -72,6 +72,7 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void spinLeftDegrees(double speed, double degrees) throws InterruptedException {
+        degrees -= 3 * (speed / DEFAULT_SPIN_SPEED);//Left overshoots more than right???
         spinRightDegrees(-speed, degrees);
     }
 

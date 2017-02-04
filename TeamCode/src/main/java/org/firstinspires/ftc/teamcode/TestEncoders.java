@@ -24,7 +24,9 @@ public class TestEncoders extends Autonomous {
         waitForStart();
         runtime.reset();
 
-        spinRightDegrees(DEFAULT_SPIN_SPEED, 360);
+        spinRightDegrees(DEFAULT_SPIN_SPEED, 45);
+        sleep(1000);
+        spinLeftDegrees(DEFAULT_SPIN_SPEED, 45);
 
         while (opModeIsActive()) {
             idle();

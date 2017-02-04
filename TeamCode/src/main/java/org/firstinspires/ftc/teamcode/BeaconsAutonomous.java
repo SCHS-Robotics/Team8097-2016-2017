@@ -112,13 +112,8 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
 
     public void findTapeRight() throws InterruptedException {
         sleep(250);
-        boolean firstTime = true;
         int i = 0;
-        while (i < 1 && (frontTapeSensor.alpha() < frontTapeLowThreshold || backTapeSensor.alpha() < backTapeLowThreshold) && opModeIsActive()) {
-            if (!firstTime) {
-                goBackwardDistance(0.3, 5);
-            }
-            firstTime = false;
+        while (i < 5 && (frontTapeSensor.alpha() < frontTapeLowThreshold || backTapeSensor.alpha() < backTapeLowThreshold) && opModeIsActive()) {
             while (frontTapeSensor.alpha() < frontTapeLowThreshold && backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
                 logData("light", frontTapeSensor.alpha());
                 updateTelemetry();
@@ -144,13 +139,8 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
 
     public void findTapeLeft() throws InterruptedException {
         sleep(250);
-        boolean firstTime = true;
         int i = 0;
-        while (i < 1 && (frontTapeSensor.alpha() < frontTapeLowThreshold || backTapeSensor.alpha() < backTapeLowThreshold) && opModeIsActive()) {
-            if (!firstTime) {
-                goForwardDistance(0.3, 5);
-            }
-            firstTime = false;
+        while (i < 5 && (frontTapeSensor.alpha() < frontTapeLowThreshold || backTapeSensor.alpha() < backTapeLowThreshold) && opModeIsActive()) {
             while (frontTapeSensor.alpha() < frontTapeLowThreshold && backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
                 logData("light", frontTapeSensor.alpha());
                 updateTelemetry();
