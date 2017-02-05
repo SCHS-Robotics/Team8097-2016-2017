@@ -175,7 +175,8 @@ public abstract class Autonomous extends BaseOpMode {
             averageRed[j] /= numReads;
             averageGreen[j] /= numReads;
             averageBlue[j] /= numReads;
-            averageColor[j] = Color.argb((int) Math.round(averageAlpha[j]), (int) Math.round(averageRed[j]), (int) Math.round(averageGreen[j]), (int) Math.round(averageBlue[j]));
+            averageColor[j] = Color.argb((int) Math.round(averageAlpha[j]), (int) Math.round(averageRed[j]),
+                    (int) Math.round(averageGreen[j]), (int) Math.round(averageBlue[j]));
         }
         return averageColor;
     }

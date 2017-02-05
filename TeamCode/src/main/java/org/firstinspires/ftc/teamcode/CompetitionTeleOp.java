@@ -70,7 +70,8 @@ public class CompetitionTeleOp extends BaseOpMode {
                     spun = true;
                 } else {
                     if (spun) {
-                        double averageTicks = (backLeftMotor.getCurrentPosition() + backRightMotor.getCurrentPosition() + frontLeftMotor.getCurrentPosition() + frontRightMotor.getCurrentPosition()) / 4.0;
+                        double averageTicks = (backLeftMotor.getCurrentPosition() + backRightMotor.getCurrentPosition() +
+                                frontLeftMotor.getCurrentPosition() + frontRightMotor.getCurrentPosition()) / 4.0;
                         currentAngle += -averageTicks / TICKS_PER_DEGREE;
                     }
                     double joystickInputX = gamepad1.left_stick_x;

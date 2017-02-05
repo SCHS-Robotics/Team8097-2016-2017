@@ -10,7 +10,7 @@ public abstract class SecretWeapon extends CompetitionAutonomous {
     public void runOpMode() throws InterruptedException {
         allInit();
         waitForStart();
-//        sleep(10000);
+        sleep(10000);
         goForwardDistance(DEFAULT_FORWARD_SPEED, 228);
         spinInward(DEFAULT_SPIN_SPEED, 90);
         goForwardDistance(DEFAULT_FORWARD_SPEED, 119);
