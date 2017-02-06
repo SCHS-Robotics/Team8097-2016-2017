@@ -21,7 +21,7 @@ public class CompetitionTeleOp extends BaseOpMode {
     public final static int BACKWARD = 270;
     public final static int BACKWARD_RIGHT = 315;
 
-    public final static double MIN_SPEED = 0;
+    public final static double MIN_SPEED = 0.1;
 
     boolean prevA = false;
     boolean prevX = false;
@@ -67,6 +67,7 @@ public class CompetitionTeleOp extends BaseOpMode {
                     } else if (gamepad1.left_trigger > MIN_SPEED) {
                         spinLeft(gamepad1.left_trigger);
                     }
+                    prevSpeed = 0;
                     spun = true;
                 } else {
                     if (spun) {
@@ -79,7 +80,7 @@ public class CompetitionTeleOp extends BaseOpMode {
                     double magnitude = Math.sqrt(Math.pow(joystickInputX, 2) + Math.pow(joystickInputY, 2));
                     double angle = prevAngle;
                     double speed = 0;
-                    if (magnitude > MIN_SPEED) {
+                    if (magnitude >= MIN_SPEED) {
                         speed = magnitude;
                         angle = Math.toDegrees(Math.atan2(joystickInputY, joystickInputX));
                         angle -= (currentAngle - 90);
@@ -89,7 +90,7 @@ public class CompetitionTeleOp extends BaseOpMode {
                     } else if (speed - prevSpeed < -maxDiff) {
                         speed = prevSpeed - maxDiff;
                     }
-                    if (speed > MIN_SPEED) {
+                    if (speed >= MIN_SPEED) {
                         goDirection(speed, angle);
                     } else {
                         stopRobot();

@@ -64,7 +64,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     double leftFlapEndPos = 0.512;
     double rightFlapEndPos = 0.502;
     double rangeServoInitPos = 0.518;
-    double launcherServoAutoPos = 0.618;
+    double launcherServoAutoPos = 0.624;
     double launcherServoShortPos = 0.332;
     double launcherServoFarPos = launcherServoAutoPos;
     double launcherServoInitPos = launcherServoAutoPos;

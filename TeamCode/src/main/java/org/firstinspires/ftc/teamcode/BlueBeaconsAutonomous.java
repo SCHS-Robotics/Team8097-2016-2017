@@ -4,7 +4,7 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Blue Beacons Autonomous", group = "OpMode")
+@Autonomous(name = "Blue Beacons Don't Shoot Autonomous", group = "OpMode")
 public class BlueBeaconsAutonomous extends BeaconsAutonomous {
 
     @Override
