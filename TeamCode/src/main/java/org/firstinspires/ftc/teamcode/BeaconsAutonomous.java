@@ -86,8 +86,8 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
 //        } else if (angleOffset < -2) {
 //            spinLeftDegrees(0.25, -angleOffset);
 //        }
-        goAwayFromBeaconWall(0.34, beforePushingButtonDistance);
-        goToBeaconWall(0.34, beforePushingButtonDistance);
+        goAwayFromBeaconWall(0.37, beforePushingButtonDistance);
+        goToBeaconWall(0.37, beforePushingButtonDistance);
         stopRobot();
     }
 

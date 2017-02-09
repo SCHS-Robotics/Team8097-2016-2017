@@ -34,6 +34,7 @@ public class CompetitionTeleOp extends BaseOpMode {
 
     double prevSpeed = 0;
     double prevAngle = 0;
+    double prevDirection = 0;
     final double maxDiff = 0.1;
 
     @Override
@@ -58,7 +59,7 @@ public class CompetitionTeleOp extends BaseOpMode {
             if (waitTime.time() >= 50) {
                 waitTime.reset();
                 //Movement
-                if (gamepad1.right_trigger > MIN_SPEED || gamepad1.left_trigger > MIN_SPEED) {
+                if ((gamepad1.right_trigger >= MIN_SPEED || gamepad1.left_trigger >= MIN_SPEED) && prevSpeed <= MIN_SPEED) {
                     if (!spun) {
                         resetWheelEncoders();
                     }
@@ -77,13 +78,26 @@ public class CompetitionTeleOp extends BaseOpMode {
                     }
                     double joystickInputX = gamepad1.left_stick_x;
                     double joystickInputY = -gamepad1.left_stick_y;
-                    double magnitude = Math.sqrt(Math.pow(joystickInputX, 2) + Math.pow(joystickInputY, 2));
+                    double inputMagnitude = Math.sqrt(Math.pow(joystickInputX, 2) + Math.pow(joystickInputY, 2));
                     double angle = prevAngle;
                     double speed = 0;
-                    if (magnitude >= MIN_SPEED) {
-                        speed = magnitude;
+                    if (inputMagnitude >= MIN_SPEED) {
+                        speed = inputMagnitude;
                         angle = Math.toDegrees(Math.atan2(joystickInputY, joystickInputX));
                         angle -= (currentAngle - 90);
+                    }
+                    if (prevDirection != getClosestDirection(angle)) {
+                        speed = prevSpeed - maxDiff;
+                        while (speed >= MIN_SPEED) {
+                            goDirection(speed, prevDirection);
+                            speed -= maxDiff;
+                            sleep(50);
+                        }
+                        prevSpeed = 0;
+                        prevAngle = angle;
+                        prevDirection = getClosestDirection(angle);
+                        spun = false;
+                        continue;
                     }
                     if (speed - prevSpeed > maxDiff) {
                         speed = prevSpeed + maxDiff;
@@ -97,6 +111,7 @@ public class CompetitionTeleOp extends BaseOpMode {
                     }
                     prevSpeed = speed;
                     prevAngle = angle;
+                    prevDirection = getClosestDirection(angle);
                     spun = false;
                 }
 
@@ -213,6 +228,28 @@ public class CompetitionTeleOp extends BaseOpMode {
         }
     }
 
+    public int getClosestDirection(double angle) {
+        if (angleIsNearAngle(angle, RIGHT)) {
+            return RIGHT;
+        } else if (angleIsNearAngle(angle, FORWARD_RIGHT)) {
+            return FORWARD_RIGHT;
+        } else if (angleIsNearAngle(angle, FORWARD)) {
+            return FORWARD;
+        } else if (angleIsNearAngle(angle, FORWARD_LEFT)) {
+            return FORWARD_LEFT;
+        } else if (angleIsNearAngle(angle, LEFT)) {
+            return LEFT;
+        } else if (angleIsNearAngle(angle, BACKWARD_LEFT)) {
+            return BACKWARD_LEFT;
+        } else if (angleIsNearAngle(angle, BACKWARD)) {
+            return BACKWARD;
+        } else if (angleIsNearAngle(angle, BACKWARD_RIGHT)) {
+            return BACKWARD_RIGHT;
+        }
+        logData("ERROR!!!", "ERROR!!!");
+        return 0;
+    }
+
     public boolean angleIsNearAngle(double angle1, double angle2) {
         while (angle1 >= 360) {
             angle1 -= 360;
@@ -227,6 +264,6 @@ public class CompetitionTeleOp extends BaseOpMode {
             angle2 += 360;
         }
         double diff = Math.abs(angle2 - angle1);
-        return diff < 45.0 / 2 || diff > 360 - 45.0 / 2;
+        return diff <= 45.0 / 2 || diff >= 360 - 45.0 / 2;
     }
 }

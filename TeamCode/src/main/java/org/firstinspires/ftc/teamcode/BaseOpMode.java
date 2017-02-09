@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.core.Scalar;
 
 import java.util.HashMap;
 
@@ -59,22 +61,29 @@ public abstract class BaseOpMode extends LinearOpMode {
     I2cAddr rangeI2c = I2cAddr.create8bit(0x28);
 //    I2cAddr rightRangeI2c = I2cAddr.create8bit(0x38);
 
-    double leftFlapInitPos = 0.710;
-    double rightFlapInitPos = 0.324;
-    double leftFlapEndPos = 0.512;
-    double rightFlapEndPos = 0.502;
-    double rangeServoInitPos = 0.518;
-    double launcherServoAutoPos = 0.624;
-    double launcherServoShortPos = 0.332;
-    double launcherServoFarPos = launcherServoAutoPos;
-    double launcherServoInitPos = launcherServoAutoPos;
-    double leftLiftInitPos = 0.636;
-    double rightLiftInitPos = 0.210;
-    double leftLiftEndPos = 0.220;
-    double rightLiftEndPos = 0.600;
+    final double leftFlapInitPos = 0.710;
+    final double rightFlapInitPos = 0.324;
+    final double leftFlapEndPos = 0.512;
+    final double rightFlapEndPos = 0.502;
+    final double rangeServoInitPos = 0.518;
+    final double launcherServoAutoPos = 0.840;
+    final double launcherServoShortPos = 0.332;
+    final double launcherServoFarPos = launcherServoAutoPos;
+    final double launcherServoInitPos = launcherServoAutoPos;
+    final double leftLiftInitPos = 0.636;
+    final double rightLiftInitPos = 0.210;
+    final double leftLiftEndPos = 0.220;
+    final double rightLiftEndPos = 0.600;
 
-    int launchFarServoWaitTime = 23;//milliseconds
-    int launchShortServoWaitTime = 13;//milliseconds
+    final int launchFarServoWaitTime = 23;//milliseconds
+    final int launchShortServoWaitTime = 13;//milliseconds
+
+    final double vortexTargetWidthLong = 0.65;//TODO
+    final double vortexTargetWidthShort = 0.7;//TODO
+    final Scalar redHsv = new Scalar(0, 191, 191);
+    final Scalar blueHsv = new Scalar(170, 191, 127);
+    final Scalar redContrastRgb = new Scalar(0, 0, 255, 255);
+    final Scalar blueContrastRgb = new Scalar(255, 0, 0, 255);
 
     private HashMap<String, Object> telemetryData = new HashMap<String, Object>();
 
@@ -291,5 +300,11 @@ public abstract class BaseOpMode extends LinearOpMode {
         initRange();
         initTape();
         initButtons();
+    }
+
+    public void startOpenCV(CameraBridgeViewBase.CvCameraViewListener2 cameraViewListener) {
+        FtcRobotControllerActivity.turnOnCameraView.obtainMessage().sendToTarget();
+        FtcRobotControllerActivity.mOpenCvCameraView.setCvCameraViewListener(cameraViewListener);
+        FtcRobotControllerActivity.mOpenCvCameraView.enableView();
     }
 }
