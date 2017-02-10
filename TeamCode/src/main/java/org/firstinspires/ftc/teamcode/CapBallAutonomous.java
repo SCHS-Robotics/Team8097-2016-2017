@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.CvType;
@@ -16,12 +14,12 @@ import java.util.List;
 
 public abstract class CapBallAutonomous extends CompetitionAutonomous implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    boolean seesVortex = false;
-    final double minVortexWidth = 0.2;
-    double vortexWidth = 0;
-    double vortexHeight = 0;
-    double vortexX = 0;
-    double vortexY = 0;
+    private boolean seesVortex = false;
+    private final double minVortexWidth = 0.2;
+    private double vortexWidth = 0;
+    private double vortexHeight = 0;
+    private double vortexX = 0;
+    private double vortexY = 0;
 
     @Override
     public int numParticles() {
@@ -56,16 +54,16 @@ public abstract class CapBallAutonomous extends CompetitionAutonomous implements
     }
 
     private void findVortex() {
-        while (vortexX < 0.5) {
+        while (vortexX < 0.5 && seesVortex) {
             spinRight(0.25);
         }
-        while (vortexX > 0.5) {
+        while (vortexX > 0.5 && seesVortex) {
             spinLeft(0.25);
         }
-        while (vortexWidth < vortexTargetWidthShort) {
+        while (vortexWidth < vortexTargetWidthLong && seesVortex) {
             goBackward(0.25);
         }
-        while (vortexWidth > vortexTargetWidthShort) {
+        while (vortexWidth > vortexTargetWidthLong && seesVortex) {
             goForward(0.25);
         }
         stopRobot();
@@ -166,7 +164,6 @@ public abstract class CapBallAutonomous extends CompetitionAutonomous implements
             if (telemetry != null)
                 updateTelemetry();
         }
-
         return mRgba;
     }
 
