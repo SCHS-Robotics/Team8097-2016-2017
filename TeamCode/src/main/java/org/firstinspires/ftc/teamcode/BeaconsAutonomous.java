@@ -9,7 +9,7 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
     double frontTapeLowThreshold;
     double backTapeLowThreshold;
 
-    final int closeToWallDistance = 25;//centimeters
+    final int closeToWallDistance = 17;//centimeters
     final int beforePushingButtonDistance = 10;//centimeters
 
     @Override
@@ -39,15 +39,15 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
         fixPosForFindingTape();//Does nothing right now
         findTapeInward();
         alignWithWall();
-        goForwardDistance(0.5, 4);//moveAlongBeaconWall
-        findTapeLeft();//findTapeOutward
+//        goForwardDistance(0.5, 4);//moveAlongBeaconWall
+//        findTapeLeft();//findTapeOutward
         pushButton();
-        moveAlongStartWallDistance(-0.75, 12.5);
-        moveAlongBeaconWallDistance(1, 97);
+//        moveAlongStartWallDistance(-0.75, 12.5);
+        followBeaconWallDistance(1, 97);
         findTapeInward();
         alignWithWall();
-        goForwardDistance(0.5, 4);//moveAlongBeaconWall
-        findTapeLeft();//findTapeOutward
+//        goForwardDistance(0.5, 4);//moveAlongBeaconWall
+//        findTapeLeft();//findTapeOutward
         pushButton();
 
         while (opModeIsActive()) {
@@ -91,22 +91,69 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
         stopRobot();
     }
 
+    public void goForwardAndFollowWall(double speed, double centimeters) throws InterruptedException {
+        resetWheelEncoders();
+        double totalEncoderTicks = centimeters * TICKS_PER_CM_FORWARD;
+        if (Math.abs(speed) > 0.75) {
+            double goSlowEncoderTicks = 5 * TICKS_PER_CM_FORWARD;
+            double goFastEncoderTicks = (centimeters - 5) * TICKS_PER_CM_FORWARD;
+            goForwardAndAdjustToWall(speed / 2, goSlowEncoderTicks);
+            goForwardAndAdjustToWall(speed, goFastEncoderTicks);
+            goForwardAndAdjustToWall(speed / 2, totalEncoderTicks);
+        } else {
+            goForwardAndAdjustToWall(speed, totalEncoderTicks);
+        }
+        stopRobot();
+    }
+
+    public void goForwardAndAdjustToWall(double speed, double encoderTicks) {
+        boolean adjustedCloser = false;
+        boolean adjustedFarther = false;
+        boolean wasStraight = false;
+        while (getFurthestEncoder() < encoderTicks && opModeIsActive()) {
+            if (getRangeDistance() > beforePushingButtonDistance && !adjustedCloser) {
+                backLeftMotor.setPower(speed);
+                backRightMotor.setPower(-speed * 0.9);
+                frontLeftMotor.setPower(speed);
+                frontRightMotor.setPower(-speed * 0.9);
+                adjustedCloser = true;
+                adjustedFarther = false;
+                wasStraight = false;
+            } else if (getRangeDistance() < beforePushingButtonDistance && !adjustedFarther) {
+                backLeftMotor.setPower(speed * 0.9);
+                backRightMotor.setPower(-speed);
+                frontLeftMotor.setPower(speed * 0.9);
+                frontRightMotor.setPower(-speed);
+                adjustedFarther = true;
+                adjustedCloser = false;
+                wasStraight = false;
+            } else if (!wasStraight) {
+                goForward(speed);
+                wasStraight = true;
+                adjustedCloser = false;
+                adjustedFarther = false;
+            }
+        }
+    }
+
     //These movements are with respect to the field. Different for red and blue because they mirror each other.
-    public abstract void moveAcrossField(double power);
+    public abstract void moveAcrossField(double speed);
 
-    public abstract void moveAcrossFieldDistance(double power, double centimeters) throws InterruptedException;
+    public abstract void moveAcrossFieldDistance(double speed, double centimeters) throws InterruptedException;
 
-    public void moveAlongStartWall(double power) {
-        goLeft(power);
+    public void moveAlongStartWall(double speed) {
+        goLeft(speed);
     }
 
-    public void moveAlongStartWallDistance(double power, double centimeters) throws InterruptedException {
-        goLeftDistance(power, centimeters);
+    public void moveAlongStartWallDistance(double speed, double centimeters) throws InterruptedException {
+        goLeftDistance(speed, centimeters);
     }
 
-    public abstract void moveAlongBeaconWall(double power);
+    public abstract void moveAlongBeaconWall(double speed);
 
-    public abstract void moveAlongBeaconWallDistance(double power, double centimeters) throws InterruptedException;
+    public abstract void moveAlongBeaconWallDistance(double speed, double centimeters) throws InterruptedException;
+
+    public abstract void followBeaconWallDistance(double speed, double centimeters) throws InterruptedException;
 
     public abstract void fixPosForFindingTape() throws InterruptedException;
 

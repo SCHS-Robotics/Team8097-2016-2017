@@ -33,23 +33,28 @@ public class BlueBeaconsAutonomous extends BeaconsAutonomous {
     }
 
     @Override
-    public void moveAcrossField(double power) {
-        goDiagonalBackwardLeft(power);
+    public void moveAcrossField(double speed) {
+        goDiagonalBackwardLeft(speed);
     }
 
     @Override
-    public void moveAcrossFieldDistance(double power, double centimeters) throws InterruptedException {
-        goDiagonalBackwardLeftDistance(power, centimeters);
+    public void moveAcrossFieldDistance(double speed, double centimeters) throws InterruptedException {
+        goDiagonalBackwardLeftDistance(speed, centimeters);
     }
 
     @Override
-    public void moveAlongBeaconWall(double power) {
-        goBackward(power);
+    public void moveAlongBeaconWall(double speed) {
+        goBackward(speed);
     }
 
     @Override
-    public void moveAlongBeaconWallDistance(double power, double centimeters) throws InterruptedException {
-        goBackwardDistance(power, centimeters);
+    public void moveAlongBeaconWallDistance(double speed, double centimeters) throws InterruptedException {
+        goBackwardDistance(speed, centimeters);
+    }
+
+    @Override
+    public void followBeaconWallDistance(double speed, double centimeters) throws InterruptedException {
+        goForwardAndFollowWall(-speed, centimeters);
     }
 
     @Override

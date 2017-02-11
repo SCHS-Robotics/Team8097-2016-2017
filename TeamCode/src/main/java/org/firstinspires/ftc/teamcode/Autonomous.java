@@ -95,7 +95,7 @@ public abstract class Autonomous extends BaseOpMode {
         stopRobot();
     }
 
-    private void waitForEncoders(double encoderTicks) throws InterruptedException {
+    public void waitForEncoders(double encoderTicks) throws InterruptedException {
         while (getFurthestEncoder() < encoderTicks && opModeIsActive()) {
             sleep(1);
         }

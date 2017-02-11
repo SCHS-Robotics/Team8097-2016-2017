@@ -7,7 +7,6 @@ public class TestEncoders extends Autonomous {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
-    double power = 0;
     int waitTime = 250;
 
     @Override
