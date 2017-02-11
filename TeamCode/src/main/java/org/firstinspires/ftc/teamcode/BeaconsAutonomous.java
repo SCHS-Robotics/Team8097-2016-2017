@@ -27,26 +27,26 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous {
 
         if (shouldShoot()) {
             shoot();
-            goBackwardDistance(DEFAULT_FORWARD_SPEED, 10);
+            goBackwardDistance(0.75, 10);
             fixPosAfterShooting();
         } else {
-            moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 10);
+            moveAlongBeaconWallDistance(0.75, 10);
         }
         turn45ToBeacons();
-        moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 130);
+        moveAlongBeaconWallDistance(1, 130);
         turn45backStraight();
-        goToBeaconWall(DEFAULT_SIDEWAYS_SPEED, closeToWallDistance);
+        goToBeaconWall(0.75, closeToWallDistance);
         fixPosForFindingTape();//Does nothing right now
         findTapeInward();
         alignWithWall();
-        goForwardDistance(0.4, 4);//moveAlongBeaconWall
+        goForwardDistance(0.5, 4);//moveAlongBeaconWall
         findTapeLeft();//findTapeOutward
         pushButton();
-        moveAlongStartWallDistance(-DEFAULT_SIDEWAYS_SPEED, 12.5);
-        moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 97);
+        moveAlongStartWallDistance(-0.75, 12.5);
+        moveAlongBeaconWallDistance(1, 97);
         findTapeInward();
         alignWithWall();
-        goForwardDistance(0.4, 4);//moveAlongBeaconWall
+        goForwardDistance(0.5, 4);//moveAlongBeaconWall
         findTapeLeft();//findTapeOutward
         pushButton();
 

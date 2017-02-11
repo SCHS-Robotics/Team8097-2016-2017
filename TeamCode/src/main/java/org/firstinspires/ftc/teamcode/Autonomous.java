@@ -77,11 +77,21 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void goForwardDistance(double speed, double centimeters) throws InterruptedException {
-        centimeters -= 0 * (speed / DEFAULT_FORWARD_SPEED);//Accounting for encoder/motor delay
         resetWheelEncoders();
-        goForward(speed);
         double totalEncoderTicks = centimeters * TICKS_PER_CM_FORWARD;
-        waitForEncoders(totalEncoderTicks);
+        if (Math.abs(speed) > 0.75) {
+            double goSlowEncoderTicks = 5 * TICKS_PER_CM_FORWARD;
+            double goFastEncoderTicks = (centimeters - 5) * TICKS_PER_CM_FORWARD;
+            goForward(speed / 2);
+            waitForEncoders(goSlowEncoderTicks);
+            goForward(speed);
+            waitForEncoders(goFastEncoderTicks);
+            goForward(speed / 2);
+            waitForEncoders(totalEncoderTicks);
+        } else {
+            goForward(speed);
+            waitForEncoders(totalEncoderTicks);
+        }
         stopRobot();
     }
 
@@ -96,7 +106,6 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void goRightDistance(double speed, double centimeters) throws InterruptedException {
-        centimeters -= 0 * (speed / DEFAULT_SIDEWAYS_SPEED);//Accounting for encoder/motor delay
         resetWheelEncoders();
         goRight(speed);
         double totalEncoderTicks = centimeters * TICKS_PER_CM_SIDEWAYS;
@@ -167,7 +176,8 @@ public abstract class Autonomous extends BaseOpMode {
                 averageGreen[j] += Color.green(color);
                 averageBlue[j] += Color.blue(color);
             }
-            sleep(34);//"internal sampling rate" is 30 times per second, according to Modern Robotics  (1/30) * 1000 = 33.3
+            if (i < numReads - 1)
+                sleep(34);//"internal sampling rate" is 30 times per second, according to Modern Robotics  (1/30) * 1000 = 33.3
         }
         int[] averageColor = new int[n];
         for (int j = 0; j < n; j++) {
