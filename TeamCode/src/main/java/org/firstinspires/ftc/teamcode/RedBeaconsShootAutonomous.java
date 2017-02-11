@@ -15,4 +15,9 @@ public class RedBeaconsShootAutonomous extends RedBeaconsAutonomous {
     public int numParticles() {
         return 1;
     }
+
+    @Override
+    public void turnToBeacons(double speed, double angle) throws InterruptedException {
+        //Do nothing
+    }
 }

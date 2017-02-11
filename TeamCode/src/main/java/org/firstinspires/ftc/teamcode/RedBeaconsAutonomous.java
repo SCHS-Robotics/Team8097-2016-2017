@@ -4,6 +4,8 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.opencv.core.Scalar;
+
 @Autonomous(name = "Red Beacons Don't Shoot Autonomous", group = "OpMode")
 public class RedBeaconsAutonomous extends BeaconsAutonomous {
 
@@ -19,17 +21,17 @@ public class RedBeaconsAutonomous extends BeaconsAutonomous {
 
     @Override
     public void fixPosAfterShooting() throws InterruptedException {
-        spinRightDegrees(DEFAULT_SPIN_SPEED, 180);
+        spinRightDegrees(DEFAULT_SPIN_SPEED, 135);
     }
 
     @Override
-    public void turn45ToBeacons() throws InterruptedException {
-        spinLeftDegrees(DEFAULT_SPIN_SPEED, 45);
+    public void turnToBeacons(double speed, double angle) throws InterruptedException {
+        spinLeftDegrees(speed, angle);
     }
 
     @Override
-    public void turn45backStraight() throws InterruptedException {
-        spinRightDegrees(DEFAULT_SPIN_SPEED, 45);
+    public void turnAwayFromBeacons(double speed, double angle) throws InterruptedException {
+        spinRightDegrees(speed, angle);
     }
 
     @Override
@@ -40,6 +42,11 @@ public class RedBeaconsAutonomous extends BeaconsAutonomous {
     @Override
     public void moveAcrossFieldDistance(double speed, double centimeters) throws InterruptedException {
         goDiagonalForwardLeftDistance(speed, centimeters);
+    }
+
+    @Override
+    public void moveAwayFromWallAfterCollecting(double speed, double centimeters) throws InterruptedException {
+        goLeftDistance(speed, centimeters);
     }
 
     @Override
@@ -96,5 +103,15 @@ public class RedBeaconsAutonomous extends BeaconsAutonomous {
     @Override
     public void setTeleOpAngle() {
         CompetitionTeleOp.currentAngle = 90;
+    }
+
+    @Override
+    public Scalar getVortexColorHsv() {
+        return redHsv;
+    }
+
+    @Override
+    public Scalar getVortexOutlineColorRgb() {
+        return redContrastRgb;
     }
 }

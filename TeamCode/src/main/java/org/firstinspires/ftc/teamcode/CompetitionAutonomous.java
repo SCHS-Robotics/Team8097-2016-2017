@@ -4,8 +4,10 @@ public abstract class CompetitionAutonomous extends Autonomous {
 
     public void shoot() throws InterruptedException {
         int numTries = numParticles();
-        startLauncher();
-        sleep(1500);
+        if (leftLaunchMotor.getPower() == 0) {
+            startLauncher();
+            sleep(1500);
+        }
         for (int i = 0; i < numTries; i++) {
             liftToLaunch();
             sleep(300);

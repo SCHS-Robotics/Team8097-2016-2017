@@ -54,16 +54,16 @@ public abstract class CapBallAutonomous extends CompetitionAutonomous implements
     }
 
     private void findVortex() {
-        while (vortexX < 0.5 && seesVortex) {
+        while (vortexX < 0.5 && seesVortex && opModeIsActive()) {
             spinRight(0.25);
         }
-        while (vortexX > 0.5 && seesVortex) {
+        while (vortexX > 0.5 && seesVortex && opModeIsActive()) {
             spinLeft(0.25);
         }
-        while (vortexWidth < vortexTargetWidthLong && seesVortex) {
+        while (vortexWidth < vortexTargetWidthLong && seesVortex && opModeIsActive()) {
             goBackward(0.25);
         }
-        while (vortexWidth > vortexTargetWidthLong && seesVortex) {
+        while (vortexWidth > vortexTargetWidthLong && seesVortex && opModeIsActive()) {
             goForward(0.25);
         }
         stopRobot();
