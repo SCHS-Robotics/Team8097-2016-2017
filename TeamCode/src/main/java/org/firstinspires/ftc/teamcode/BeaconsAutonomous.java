@@ -50,7 +50,7 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
         findTapeInward();
         alignWithWall();
         pushButton();
-        followBeaconWallDistance(1, 97);
+        followBeaconWallDistance(1, 110);
         findTapeInward();
         alignWithWall();
         pushButton();
@@ -170,9 +170,9 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
 
     public abstract void fixPosForFindingTape() throws InterruptedException;
 
-    public void findTapeRight() throws InterruptedException {
+    public void findTapeRight(int direction) throws InterruptedException {
         sleep(250);
-        goForward(0.1);
+        goForward(0.1 * direction);
         while (frontTapeSensor.alpha() < frontTapeLowThreshold && backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
             logData("light", frontTapeSensor.alpha());
             updateTelemetry();
@@ -180,40 +180,13 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
         int i = 0;
         while (i < 5 && (frontTapeSensor.alpha() < frontTapeLowThreshold || backTapeSensor.alpha() < backTapeLowThreshold) && opModeIsActive()) {
             if (frontTapeSensor.alpha() < frontTapeLowThreshold) {
-                moveLeftWheelsForward(0.1);
+                moveLeftWheelsForward(0.1 * direction);
                 while (frontTapeSensor.alpha() < frontTapeLowThreshold && opModeIsActive()) {
                     logData("light", frontTapeSensor.alpha());
                     updateTelemetry();
                 }
             } else if (backTapeSensor.alpha() < backTapeLowThreshold) {
-                moveRightWheelsForward(0.1);
-                while (backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
-                    logData("light", backTapeSensor.alpha());
-                    updateTelemetry();
-                }
-            }
-            i++;
-        }
-        stopRobot();
-    }
-
-    public void findTapeLeft() throws InterruptedException {
-        sleep(250);
-        goBackward(0.1);
-        while (frontTapeSensor.alpha() < frontTapeLowThreshold && backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
-            logData("light", frontTapeSensor.alpha());
-            updateTelemetry();
-        }
-        int i = 0;
-        while (i < 5 && (frontTapeSensor.alpha() < frontTapeLowThreshold || backTapeSensor.alpha() < backTapeLowThreshold) && opModeIsActive()) {
-            if (frontTapeSensor.alpha() < frontTapeLowThreshold) {
-                moveLeftWheelsBackward(0.1);
-                while (frontTapeSensor.alpha() < frontTapeLowThreshold && opModeIsActive()) {
-                    logData("light", frontTapeSensor.alpha());
-                    updateTelemetry();
-                }
-            } else if (backTapeSensor.alpha() < backTapeLowThreshold) {
-                moveRightWheelsBackward(0.1);
+                moveRightWheelsForward(0.1 * direction);
                 while (backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
                     logData("light", backTapeSensor.alpha());
                     updateTelemetry();

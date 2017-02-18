@@ -71,12 +71,12 @@ public class BlueBeaconsAutonomous extends BeaconsAutonomous {
 
     @Override
     public void findTapeInward() throws InterruptedException {
-        findTapeLeft();
+        findTapeRight(-1);//left
     }
 
     @Override
     public void findTapeOutward() throws InterruptedException {
-        findTapeRight();
+        findTapeRight(1);
     }
 
     @Override
