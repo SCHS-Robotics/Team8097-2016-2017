@@ -29,11 +29,6 @@ public class OpenCVTest extends BaseOpMode implements CameraBridgeViewBase.CvCam
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
 
-    private Scalar redHsv = new Scalar(0, 191, 191);
-    private Scalar blueHsv = new Scalar(170, 191, 127);
-    private Scalar redContrastRgb = new Scalar(0, 0, 255, 255);
-    private Scalar blueContrastRgb = new Scalar(255, 0, 0, 255);
-
     double vortexWidth = 0;
     double vortexHeight = 0;
     double vortexX = 0;
@@ -130,13 +125,5 @@ public class OpenCVTest extends BaseOpMode implements CameraBridgeViewBase.CvCam
         }
 
         return mRgba;
-    }
-
-    private Scalar convertScalarHsv2Rgba(Scalar hsvColor) {
-        Mat pointMatRgba = new Mat();
-        Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
-        Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
-
-        return new Scalar(pointMatRgba.get(0, 0));
     }
 }

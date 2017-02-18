@@ -4,16 +4,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 import java.util.HashMap;
-import java.util.List;
 
 public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBridgeViewBase.CvCameraViewListener2 {
     private ElapsedTime runtime = new ElapsedTime();
@@ -32,8 +26,6 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
     public final static int BACKWARD = 270;
     public final static int BACKWARD_RIGHT = 315;
 
-    public final static double MIN_SPEED = 0.1;
-
     boolean prevA = false;
     boolean prevX = false;
 
@@ -47,6 +39,7 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
     double prevAngle = 0;
     int prevDirection = 0;
 
+    final static double slowEnough = 0.5;
     final static HashMap<Integer, Double> maxDiffByDirection;
 
     static {
@@ -61,12 +54,6 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
         maxDiffByDirection.put(BACKWARD_LEFT, 0.5);
     }
 
-    private boolean seesVortex = false;
-    private final double minVortexWidth = 0.2;
-    private double vortexWidth = 0;
-    private double vortexHeight = 0;
-    private double vortexX = 0;
-    private double vortexY = 0;
     boolean foundVortex = false;
 
     @Override
@@ -121,7 +108,7 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                     }
                     double maxDiff = maxDiffByDirection.get(prevDirection);
                     if (prevDirection != getClosestDirection(angle)) {
-                        speed = prevSpeed - maxDiff;
+                        speed = Math.min(prevSpeed - maxDiff, slowEnough);
                         while (speed >= MIN_SPEED) {
                             goDirection(speed, prevDirection);
                             speed -= maxDiff;
@@ -136,7 +123,7 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                     if (speed - prevSpeed > maxDiff) {
                         speed = prevSpeed + maxDiff;
                     } else if (speed - prevSpeed < -maxDiff) {
-                        speed = prevSpeed - maxDiff;
+                        speed = Math.min(prevSpeed - maxDiff, Math.max(slowEnough, speed));
                     }
                     if (speed >= MIN_SPEED) {
                         goDirection(speed, angle);
@@ -335,133 +322,20 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
         return diff <= 45.0 / 2 || diff >= 360 - 45.0 / 2;
     }
 
-    private boolean findVortex() {
-        double vortexTargetWidth;
-        if (launcherServo.getPosition() == launcherServoShortPos) {
-            vortexTargetWidth = vortexTargetWidthShort;
-        } else {
-            vortexTargetWidth = vortexTargetWidthLong;
-        }
-        while (vortexX < 0.5 && seesVortex) {
-            spinRight(0.25);
-            if (doCancelAutoLaunch())
-                return false;
-        }
-        while (vortexX > 0.5 && seesVortex) {
-            spinLeft(0.25);
-            if (doCancelAutoLaunch())
-                return false;
-        }
-        while (vortexWidth < vortexTargetWidth && seesVortex) {
-            goBackward(0.25);
-            if (doCancelAutoLaunch())
-                return false;
-        }
-        while (vortexWidth > vortexTargetWidth && seesVortex) {
-            goForward(0.25);
-            if (doCancelAutoLaunch())
-                return false;
-        }
-        stopRobot();
-        return seesVortex;
-    }
-
-    private boolean doCancelAutoLaunch() {
-        return (Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) >= MIN_SPEED || (gamepad2.b || gamepad1.b);
-    }
-
     public abstract Scalar getVortexColorHsv();
 
     public abstract Scalar getVortexOutlineColorRgb();
 
     //OpenCV Stuff
-    private boolean mIsColorSelected = false;
-    private Mat mRgba;
-    private Scalar mBlobColorRgba;
-    private Scalar mBlobColorHsv;
-    private ColorBlobDetector mDetector;
-    private Mat mSpectrum;
-    private Size SPECTRUM_SIZE;
-    private Scalar CONTOUR_COLOR;
-
     public void onCameraViewStarted(int width, int height) {
-        mRgba = new Mat(height, width, CvType.CV_8UC4);
-        mDetector = new ColorBlobDetector();
-        mSpectrum = new Mat();
-        mBlobColorRgba = new Scalar(255);
-        mBlobColorHsv = new Scalar(255);
-        SPECTRUM_SIZE = new Size(200, 64);
+        whenCameraViewStarts(width, height, getVortexColorHsv(), getVortexOutlineColorRgb());
+    }
 
-        mBlobColorHsv = getVortexColorHsv();
-        CONTOUR_COLOR = getVortexOutlineColorRgb();
-
-        mBlobColorRgba = convertScalarHsv2Rgba(mBlobColorHsv);
-
-        mDetector.setHsvColor(mBlobColorHsv);
-
-        Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
-
-        mIsColorSelected = true;
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        return processCameraFrame(inputFrame);
     }
 
     public void onCameraViewStopped() {
         mRgba.release();
-    }
-
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        mRgba = inputFrame.rgba();
-
-        if (mIsColorSelected) {
-            mDetector.process(mRgba);
-            List<MatOfPoint> contours = mDetector.getContours();
-            Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
-
-            Mat colorLabel = mRgba.submat(4, 68, 4, 68);
-            colorLabel.setTo(mBlobColorRgba);
-
-            Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
-            mSpectrum.copyTo(spectrumLabel);
-
-            seesVortex = false;
-            double maxHeight = 0;
-            double theWidth = 0;
-            double theX = 0;
-            double theY = 0;
-            for (MatOfPoint contour : mDetector.getContours()) {
-                Point[] points = contour.toArray();
-                double left = points[0].x;
-                double right = points[0].x;
-                double top = points[0].y;
-                double bottom = points[0].y;
-                for (Point p : points) {
-                    left = p.x < left ? p.x : left;
-                    right = p.x > right ? p.x : right;
-                    top = p.y < top ? p.y : top;
-                    bottom = p.y > bottom ? p.y : bottom;
-                }
-                double width = right - left;
-                double height = bottom - top;
-                if (height > minVortexWidth && height > maxHeight) {
-                    seesVortex = true;
-                    maxHeight = height;
-                    theWidth = width;
-                    theX = (left + right) / 2;
-                    theY = (top + bottom) / 2;
-                }
-            }
-            vortexWidth = maxHeight / mRgba.height(); // Reversed because screen orientation is sideways, but phone is vertical
-            vortexHeight = theWidth / mRgba.width();
-            vortexX = theY / mRgba.height();
-            vortexY = theX / mRgba.width();
-        }
-        return mRgba;
-    }
-
-    private Scalar convertScalarHsv2Rgba(Scalar hsvColor) {
-        Mat pointMatRgba = new Mat();
-        Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
-        Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
-
-        return new Scalar(pointMatRgba.get(0, 0));
     }
 }

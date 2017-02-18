@@ -12,16 +12,25 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.HashMap;
+import java.util.List;
 
 public abstract class BaseOpMode extends LinearOpMode {
 
     public final static double DEFAULT_FORWARD_SPEED = 0.75;
     public final static double DEFAULT_DIAGONAL_SPEED = 0.85;
-    public final static double DEFAULT_SIDEWAYS_SPEED = 0.7;
+    public final static double DEFAULT_SIDEWAYS_SPEED = 0.75;
     public final static double DEFAULT_SPIN_SPEED = 0.75;
+
+    public final static double MIN_SPEED = 0.1;
 
     public final static double TICKS_PER_CM_FORWARD = 53.6 / 1.5; //Divided by 1.5 because we switched from 60s to 40s
     public final static double TICKS_PER_CM_SIDEWAYS = 72.0 / 1.5;
@@ -78,10 +87,12 @@ public abstract class BaseOpMode extends LinearOpMode {
     final int launchFarServoWaitTime = 23;//milliseconds
     final int launchShortServoWaitTime = 13;//milliseconds
 
-    final double vortexTargetWidthLong = 0.65;//TODO
-    final double vortexTargetWidthShort = 0.7;//TODO
-    final Scalar redHsv = new Scalar(0, 191, 191);
-    final Scalar blueHsv = new Scalar(170, 191, 127);
+    final double vortexTargetWidthLong = 0.34;
+    final double vortexTargetWidthShort = 0.4;//TODO
+    final double minVortexWidth = 0.2;
+    final double vortexTargetX = 0.6;
+    final Scalar redHsv = new Scalar(0, 191, 191);//TODO
+    final Scalar blueHsv = new Scalar(170, 191, 100);
     final Scalar redContrastRgb = new Scalar(0, 0, 255, 255);
     final Scalar blueContrastRgb = new Scalar(255, 0, 0, 255);
 
@@ -302,9 +313,191 @@ public abstract class BaseOpMode extends LinearOpMode {
         initButtons();
     }
 
+    public boolean findVortex() throws InterruptedException {
+        double vortexTargetWidth;
+        if (launcherServo.getPosition() == launcherServoShortPos) {
+            vortexTargetWidth = vortexTargetWidthShort;
+        } else {
+            vortexTargetWidth = vortexTargetWidthLong;
+        }
+        if (vortexX < vortexTargetX && seesVortex) {
+            spinLeft(0.25);
+            while (vortexX < vortexTargetX && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+            sleep(50);
+            if (vortexX > vortexTargetX && seesVortex) {
+                spinRight(0.1);
+                while (vortexX > vortexTargetX && seesVortex && opModeIsActive()) {
+                    if (doCancelAutoLaunch())
+                        return false;
+                }
+            }
+        } else if (vortexX > vortexTargetX && seesVortex) {
+            spinRight(0.25);
+            while (vortexX > vortexTargetX && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+            sleep(50);
+            if (vortexX < vortexTargetX && seesVortex) {
+                spinLeft(0.1);
+                while (vortexX < vortexTargetX && seesVortex && opModeIsActive()) {
+                    if (doCancelAutoLaunch())
+                        return false;
+                }
+            }
+        }
+
+        if (vortexWidth < vortexTargetWidth && seesVortex) {
+            goBackward(0.2);
+            while (vortexWidth < vortexTargetWidth && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+            sleep(50);
+            if (vortexWidth > vortexTargetWidth && seesVortex) {
+                goForward(0.1);
+                while (vortexWidth > vortexTargetWidth && seesVortex && opModeIsActive()) {
+                    if (doCancelAutoLaunch())
+                        return false;
+                }
+            }
+        } else if (vortexWidth > vortexTargetWidth && seesVortex) {
+            goForward(0.2);
+            while (vortexWidth > vortexTargetWidth && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+            sleep(50);
+            if (vortexWidth < vortexTargetWidth && seesVortex) {
+                goBackward(0.1);
+                while (vortexWidth < vortexTargetWidth && seesVortex && opModeIsActive()) {
+                    if (doCancelAutoLaunch())
+                        return false;
+                }
+            }
+        }
+
+        if (vortexX < vortexTargetX && seesVortex) {
+            spinLeft(0.1);
+            while (vortexX < vortexTargetX && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+        } else if (vortexX > vortexTargetX && seesVortex) {
+            spinRight(0.1);
+            while (vortexX > vortexTargetX && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+        }
+        stopRobot();
+        return seesVortex;
+    }
+
+    public boolean doCancelAutoLaunch() {
+        return (this instanceof CompetitionTeleOp) && ((Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) >= MIN_SPEED || (gamepad2.b || gamepad1.b));
+    }
+
+    //OpenCV Stuff
+    Mat mRgba;
+    Scalar mBlobColorRgba;
+    Scalar mBlobColorHsv;
+    ColorBlobDetector mDetector;
+    Mat mSpectrum;
+    Size SPECTRUM_SIZE;
+    Scalar CONTOUR_COLOR;
+
+    boolean seesVortex;
+    double vortexWidth;
+    double vortexHeight;
+    double vortexX;
+    double vortexY;
+
     public void startOpenCV(CameraBridgeViewBase.CvCameraViewListener2 cameraViewListener) {
         FtcRobotControllerActivity.turnOnCameraView.obtainMessage().sendToTarget();
         FtcRobotControllerActivity.mOpenCvCameraView.setCvCameraViewListener(cameraViewListener);
         FtcRobotControllerActivity.mOpenCvCameraView.enableView();
+    }
+
+    public void whenCameraViewStarts(int width, int height, Scalar blobColor, Scalar contourColor) {
+        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mDetector = new ColorBlobDetector();
+        mSpectrum = new Mat();
+        mBlobColorRgba = new Scalar(255);
+        mBlobColorHsv = new Scalar(255);
+        SPECTRUM_SIZE = new Size(200, 64);
+
+        mBlobColorHsv = blobColor;
+        CONTOUR_COLOR = contourColor;
+
+        mBlobColorRgba = convertScalarHsv2Rgba(mBlobColorHsv);
+
+        mDetector.setHsvColor(mBlobColorHsv);
+
+        Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
+
+        seesVortex = false;
+        vortexWidth = 0;
+        vortexHeight = 0;
+        vortexX = 0;
+        vortexY = 0;
+    }
+
+    public Mat processCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        mRgba = inputFrame.rgba();
+        mDetector.process(mRgba);
+        List<MatOfPoint> contours = mDetector.getContours();
+        Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
+
+        Mat colorLabel = mRgba.submat(4, 68, 4, 68);
+        colorLabel.setTo(mBlobColorRgba);
+
+        Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
+        mSpectrum.copyTo(spectrumLabel);
+
+        boolean doesSeeVortex = false;
+        double maxWidth = 0;
+        double theHeight = 0;
+        double theX = 0;
+        double theY = 0;
+        for (MatOfPoint contour : mDetector.getContours()) {
+            Point[] points = contour.toArray();
+            double left = points[0].x;
+            double right = points[0].x;
+            double top = points[0].y;
+            double bottom = points[0].y;
+            for (Point p : points) {
+                left = p.x < left ? p.x : left;
+                right = p.x > right ? p.x : right;
+                top = p.y < top ? p.y : top;
+                bottom = p.y > bottom ? p.y : bottom;
+            }
+            double width = right - left;
+            double height = bottom - top;
+            if (width > minVortexWidth && width > maxWidth) {
+                doesSeeVortex = true;
+                maxWidth = width;
+                theHeight = height;
+                theX = (left + right) / 2;
+                theY = (top + bottom) / 2;
+            }
+        }
+        vortexWidth = maxWidth / mRgba.width();
+        vortexHeight = theHeight / mRgba.height();
+        vortexX = theX / mRgba.width();
+        vortexY = theY / mRgba.height();
+        seesVortex = doesSeeVortex;
+        return mRgba;
+    }
+
+    public Scalar convertScalarHsv2Rgba(Scalar hsvColor) {
+        Mat pointMatRgba = new Mat();
+        Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
+        Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
+
+        return new Scalar(pointMatRgba.get(0, 0));
     }
 }
