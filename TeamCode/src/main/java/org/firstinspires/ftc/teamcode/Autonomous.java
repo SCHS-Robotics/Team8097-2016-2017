@@ -36,29 +36,29 @@ public abstract class Autonomous extends BaseOpMode {
 
     public void moveLeftWheelsForward(double speed) {
         backLeftMotor.setPower(speed);
-        backRightMotor.setPower(speed * 0.5);
+        backRightMotor.setPower(speed * 0.1);
         frontLeftMotor.setPower(speed);
-        frontRightMotor.setPower(speed * 0.5);
+        frontRightMotor.setPower(speed * 0.1);
     }
 
     public void moveLeftWheelsBackward(double speed) {
         backLeftMotor.setPower(-speed);
-        backRightMotor.setPower(-speed * 0.5);
+        backRightMotor.setPower(-speed * 0.1);
         frontLeftMotor.setPower(-speed);
-        frontRightMotor.setPower(-speed * 0.5);
+        frontRightMotor.setPower(-speed * 0.1);
     }
 
     public void moveRightWheelsForward(double speed) {
-        backLeftMotor.setPower(-speed * 0.5);
+        backLeftMotor.setPower(-speed * 0.1);
         backRightMotor.setPower(-speed);
-        frontLeftMotor.setPower(-speed * 0.5);
+        frontLeftMotor.setPower(-speed * 0.1);
         frontRightMotor.setPower(-speed);
     }
 
     public void moveRightWheelsBackward(double speed) {
-        backLeftMotor.setPower(speed * 0.5);
+        backLeftMotor.setPower(speed * 0.1);
         backRightMotor.setPower(speed);
-        frontLeftMotor.setPower(speed * 0.5);
+        frontLeftMotor.setPower(speed * 0.1);
         frontRightMotor.setPower(speed);
     }
 
@@ -79,7 +79,7 @@ public abstract class Autonomous extends BaseOpMode {
     public void goForwardDistance(double speed, double centimeters) throws InterruptedException {
         resetWheelEncoders();
         double totalEncoderTicks = centimeters * TICKS_PER_CM_FORWARD;
-        if (Math.abs(speed) > 0.75) {
+        if (Math.abs(speed) > DEFAULT_FORWARD_SPEED) {
             double goSlowEncoderTicks = 5 * TICKS_PER_CM_FORWARD;
             double goFastEncoderTicks = (centimeters - 30) * TICKS_PER_CM_FORWARD;
             goForward(speed / 2);

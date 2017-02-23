@@ -85,11 +85,11 @@ public class CalibrateTape extends BaseOpMode {
 
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
-        FtcRobotControllerActivity.setButtonsUnclickable.obtainMessage().sendToTarget();
+        setButtonsClickable(false);
     }
 
-    private void setButtonsClickable(boolean visible) {
-        if (visible) {
+    private void setButtonsClickable(boolean clickable) {
+        if (clickable) {
             FtcRobotControllerActivity.setButtonsClickable.obtainMessage().sendToTarget();
         } else {
             FtcRobotControllerActivity.setButtonsUnclickable.obtainMessage().sendToTarget();

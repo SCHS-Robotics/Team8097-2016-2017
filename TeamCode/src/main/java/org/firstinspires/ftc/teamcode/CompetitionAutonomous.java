@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 public abstract class CompetitionAutonomous extends Autonomous {
 
     public void shoot() throws InterruptedException {
+        sleep(500);
         int numTries = numParticles();
         if (leftLaunchMotor.getPower() == 0) {
             startLauncher();
@@ -14,7 +15,7 @@ public abstract class CompetitionAutonomous extends Autonomous {
             leftLiftServo.setPosition(leftLiftInitPos);
             rightLiftServo.setPosition(rightLiftInitPos);
             if (i < numTries - 1) {
-                sleep(1500);
+                sleep(1000);
             }
         }
         stopLauncher();

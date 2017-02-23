@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Camera;
 import android.graphics.Color;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
@@ -9,18 +10,20 @@ import org.opencv.core.Scalar;
 
 public abstract class BeaconsAutonomous extends CompetitionAutonomous implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    double frontTapeLowThreshold;
-    double backTapeLowThreshold;
+    double frontTapeLowThresholdCoarse;
+    double backTapeLowThresholdCoarse;
+    double frontTapeLowThresholdFine;
+    double backTapeLowThresholdFine;
 
-    final int closeToWallDistance = 20;//centimeters
-    final int beforePushingButtonDistance = 10;//centimeters
+    final int closeToWallDistance = 16;//centimeters
+    final int beforePushingButtonDistance = 7;//centimeters
 
     @Override
     public void runOpMode() throws InterruptedException {
         logData("Status", "Initialized");
         updateTelemetry();
 
-        startOpenCV(this);
+        //startOpenCV(this);
         allInit();
         loadTapeValues();
 
@@ -35,33 +38,36 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
             sleep(250);
             moveAwayFromWallAfterCollecting(DEFAULT_SIDEWAYS_SPEED, 15);
             turnAwayFromBeacons(DEFAULT_SPIN_SPEED, 90);
+            sleep(500);
             collectionMotor.setPower(0);
-            findVortex();
+            //fineVortexRotationAdjustment();
             shoot();
             fixPosAfterShooting();
         } else {
             moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 10);
         }
-        turnToBeacons(DEFAULT_SPIN_SPEED, 45);
+        if (!(this instanceof RedBeaconsShootAutonomous || this instanceof RedBeaconsShoot3Autonomous))
+            turnToBeacons(DEFAULT_SPIN_SPEED, 45);
         moveAlongBeaconWallDistance(1, 130);
         turnAwayFromBeacons(DEFAULT_SPIN_SPEED, 45);
-        goToBeaconWall(0.75, closeToWallDistance);
-        fixPosForFindingTape();//Does nothing right now
-        findTapeInward();
+        goToBeaconWall(0.5, closeToWallDistance);
+        fixPosForFindingTape();
         alignWithWall();
+        findTapeInward();
+        //alignWithWall();
         pushButton();
         followBeaconWallDistance(1, 110);
         findTapeInward();
-        alignWithWall();
+        //alignWithWall();
         pushButton();
-        moveAlongStartWallDistance(-0.75, 10);
+        moveAlongStartWallDistance(-0.5, 10);
         turnToBeacons(DEFAULT_SPIN_SPEED, 45);
         moveAlongBeaconWallDistance(-DEFAULT_FORWARD_SPEED, 175);
 
         while (opModeIsActive()) {
             idle();
         }
-        FtcRobotControllerActivity.mOpenCvCameraView.disableView();
+        //FtcRobotControllerActivity.mOpenCvCameraView.disableView();
     }
 
     public abstract boolean shouldShoot();
@@ -97,15 +103,15 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
 //        } else if (angleOffset < -2) {
 //            spinLeftDegrees(0.25, -angleOffset);
 //        }
-        goAwayFromBeaconWall(0.37, beforePushingButtonDistance);
-        goToBeaconWall(0.37, beforePushingButtonDistance);
+        goAwayFromBeaconWall(0.4, beforePushingButtonDistance + 1);
+        goToBeaconWall(0.4, beforePushingButtonDistance + 1);
         stopRobot();
     }
 
     public void goForwardAndFollowWall(double speed, double centimeters) throws InterruptedException {
         resetWheelEncoders();
         double totalEncoderTicks = centimeters * TICKS_PER_CM_FORWARD;
-        if (Math.abs(speed) > 0.75) {
+        if (Math.abs(speed) > DEFAULT_FORWARD_SPEED) {
             double goSlowEncoderTicks = 5 * TICKS_PER_CM_FORWARD;
             double goFastEncoderTicks = (centimeters - 30) * TICKS_PER_CM_FORWARD;
             goForwardAndAdjustToWall(speed / 2, goSlowEncoderTicks);
@@ -123,23 +129,37 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
         boolean wasStraight = false;
         while (getFurthestEncoder() < encoderTicks && opModeIsActive()) {
             if (getRangeDistance() > beforePushingButtonDistance && !adjustedCloser) {
-                backLeftMotor.setPower(speed * 0.85);
-                backRightMotor.setPower(-speed);
-                frontLeftMotor.setPower(speed * 0.85);
-                frontRightMotor.setPower(-speed);
+                if (this instanceof RedBeaconsAutonomous || this instanceof RedBeaconsShoot3Autonomous || this instanceof RedBeaconsShootAutonomous) {
+                    backLeftMotor.setPower(speed);
+                    backRightMotor.setPower(-speed * 0.35);
+                    frontLeftMotor.setPower(speed * 0.35);
+                    frontRightMotor.setPower(-speed);
+                } else {
+                    backLeftMotor.setPower(speed * 0.35);
+                    backRightMotor.setPower(-speed);
+                    frontLeftMotor.setPower(speed);
+                    frontRightMotor.setPower(-speed * 0.35);
+                }
                 adjustedCloser = true;
                 adjustedFarther = false;
                 wasStraight = false;
             } else if (getRangeDistance() < beforePushingButtonDistance && !adjustedFarther) {
-                backLeftMotor.setPower(speed);
-                backRightMotor.setPower(-speed * 0.85);
-                frontLeftMotor.setPower(speed);
-                frontRightMotor.setPower(-speed * 0.85);
+                goForward(speed);
                 adjustedFarther = true;
                 adjustedCloser = false;
                 wasStraight = false;
             } else if (!wasStraight) {
-                goForward(speed);
+                if (this instanceof RedBeaconsAutonomous || this instanceof RedBeaconsShoot3Autonomous || this instanceof RedBeaconsShootAutonomous) {
+                    backLeftMotor.setPower(speed);
+                    backRightMotor.setPower(-speed * 0.95);
+                    frontLeftMotor.setPower(speed * 0.95);
+                    frontRightMotor.setPower(-speed);
+                } else {
+                    backLeftMotor.setPower(speed * 0.95);
+                    backRightMotor.setPower(-speed);
+                    frontLeftMotor.setPower(speed);
+                    frontRightMotor.setPower(-speed * 0.95);
+                }
                 wasStraight = true;
                 adjustedCloser = false;
                 adjustedFarther = false;
@@ -172,28 +192,56 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
 
     public void findTapeRight(int direction) throws InterruptedException {
         sleep(250);
-        goForward(0.1 * direction);
-        while (frontTapeSensor.alpha() < frontTapeLowThreshold && backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
+        if (this instanceof RedBeaconsAutonomous || this instanceof RedBeaconsShoot3Autonomous || this instanceof RedBeaconsShootAutonomous) {
+            backLeftMotor.setPower(0.25 * direction);
+            backRightMotor.setPower(-0.25 * direction * 0.85);
+            frontLeftMotor.setPower(0.25 * direction * 0.85);
+            frontRightMotor.setPower(-0.25 * direction);
+        } else {
+            backLeftMotor.setPower(0.25 * direction * 0.85);
+            backRightMotor.setPower(-0.25 * direction);
+            frontLeftMotor.setPower(0.25 * direction);
+            frontRightMotor.setPower(-0.25 * direction * 0.85);
+        }
+        boolean sawFront = false;
+        boolean sawBack = false;
+        while ((!sawFront || !sawBack) && opModeIsActive()) {
+            if (frontTapeSensor.alpha() >= frontTapeLowThresholdCoarse) {
+                sawFront = true;
+            }
+            if (backTapeSensor.alpha() >= backTapeLowThresholdCoarse) {
+                sawBack = true;
+            }
             logData("light", frontTapeSensor.alpha());
             updateTelemetry();
         }
-        int i = 0;
-        while (i < 5 && (frontTapeSensor.alpha() < frontTapeLowThreshold || backTapeSensor.alpha() < backTapeLowThreshold) && opModeIsActive()) {
-            if (frontTapeSensor.alpha() < frontTapeLowThreshold) {
-                moveLeftWheelsForward(0.1 * direction);
-                while (frontTapeSensor.alpha() < frontTapeLowThreshold && opModeIsActive()) {
-                    logData("light", frontTapeSensor.alpha());
-                    updateTelemetry();
-                }
-            } else if (backTapeSensor.alpha() < backTapeLowThreshold) {
-                moveRightWheelsForward(0.1 * direction);
-                while (backTapeSensor.alpha() < backTapeLowThreshold && opModeIsActive()) {
-                    logData("light", backTapeSensor.alpha());
-                    updateTelemetry();
-                }
-            }
-            i++;
-        }
+//        sleep(67);
+//        goForward(-0.1 * direction);
+//        sawFront = false;
+//        sawBack = false;
+//        while ((!sawFront && !sawBack) && opModeIsActive()) {
+//            if (frontTapeSensor.alpha() >= frontTapeLowThresholdFine) {
+//                sawFront = true;
+//            }
+//            if (backTapeSensor.alpha() >= backTapeLowThresholdFine) {
+//                sawBack = true;
+//            }
+//            logData("light", frontTapeSensor.alpha());
+//            updateTelemetry();
+//        }
+//        if (!sawFront) {
+//            moveLeftWheelsForward(-0.1 * direction);
+//            while (frontTapeSensor.alpha() < frontTapeLowThresholdFine && opModeIsActive()) {
+//                logData("light", frontTapeSensor.alpha());
+//                updateTelemetry();
+//            }
+//        } else if (!sawBack) {
+//            moveRightWheelsForward(-0.1 * direction);
+//            while (backTapeSensor.alpha() < backTapeLowThresholdFine && opModeIsActive()) {
+//                logData("light", backTapeSensor.alpha());
+//                updateTelemetry();
+//            }
+//        }
         stopRobot();
     }
 
@@ -209,7 +257,6 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
             moveCorrectButtonFlap();
             sleep(250);
             resetButtonFlaps();
-            sleep(250);
             i++;
         } while (!buttonIsPressed() && i < 3);
     }
@@ -238,15 +285,23 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
     public void loadTapeValues() {
         double frontGround = FtcRobotControllerActivity.calibrationSP.getFloat("frontGroundValue", -1000);
         double frontDiff = FtcRobotControllerActivity.calibrationSP.getFloat("frontTapeValue", -1000) - frontGround;
-        frontTapeLowThreshold = frontGround + frontDiff * 0.65;
-        if (frontTapeLowThreshold < 0) {
-            frontTapeLowThreshold = 20;
+        frontTapeLowThresholdCoarse = frontGround + frontDiff * 0.4;
+        frontTapeLowThresholdFine = frontGround + frontDiff * 0.75;
+        if (frontTapeLowThresholdFine < 0) {
+            frontTapeLowThresholdFine = 20;
+        }
+        if (frontTapeLowThresholdCoarse < 0) {
+            frontTapeLowThresholdCoarse = 10;
         }
         double backGround = FtcRobotControllerActivity.calibrationSP.getFloat("backGroundValue", -1000);
         double backDiff = FtcRobotControllerActivity.calibrationSP.getFloat("backTapeValue", -1000) - backGround;
-        backTapeLowThreshold = backGround + backDiff * 0.65;
-        if (backTapeLowThreshold < 0) {
-            backTapeLowThreshold = 20;
+        backTapeLowThresholdCoarse = backGround + backDiff * 0.4;
+        backTapeLowThresholdFine = backGround + backDiff * 0.75;
+        if (backTapeLowThresholdFine < 0) {
+            backTapeLowThresholdFine = 20;
+        }
+        if (backTapeLowThresholdCoarse < 0) {
+            backTapeLowThresholdCoarse = 10;
         }
     }
 

@@ -112,7 +112,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     android:onClick="calibrateGround"
                     android:text="Calibrate Floor"
                     android:textColor="@color/white"
-                    android:textSize="11sp" />
+                    android:textSize="11sp"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/calibrateTapeButt"
@@ -124,7 +125,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     android:onClick="calibrateTape"
                     android:text="Calibrate Tape"
                     android:textColor="@color/white"
-                    android:textSize="11sp" />
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/plusExposure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:clickable="false"
+                    android:gravity="left|center_vertical"
+                    android:onClick="plusExposure"
+                    android:text="+"
+                    android:textColor="@color/white"
+                    android:textSize="30sp" />
+
+                <Button
+                    android:id="@+id/minusExposure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:clickable="false"
+                    android:gravity="left|center_vertical"
+                    android:onClick="minusExposure"
+                    android:text="-"
+                    android:textColor="@color/white"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/exposureText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="false"
+                    android:gravity="left|center_vertical"
+                    android:text="Exposure:"
+                    android:textColor="@color/white" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -214,16 +247,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/textGamepad2"
-                android:text=""
-                android:visibility="invisible" />
+                android:text="" />
 
             <TextView
                 android:id="@+id/textGamepad2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:text=""
-                android:visibility="invisible" />
+                android:text="" />
 
             <TextView
                 android:id="@+id/textRemoteProgrammingMode"

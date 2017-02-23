@@ -66,7 +66,7 @@ public class BlueBeaconsAutonomous extends BeaconsAutonomous {
 
     @Override
     public void fixPosForFindingTape() throws InterruptedException {
-//        goForwardDistance(DEFAULT_FORWARD_SPEED, 5);
+//        moveAlongBeaconWallDistance(DEFAULT_FORWARD_SPEED, 10);
     }
 
     @Override

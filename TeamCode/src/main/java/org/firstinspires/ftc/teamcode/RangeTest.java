@@ -43,7 +43,7 @@ public class RangeTest extends Autonomous {
 
             logData("degrees", determineAngleOffset());
 
-            //display values
+            //display vortexValues
             updateTelemetry();
             sleep(10000000);
 

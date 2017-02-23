@@ -29,6 +29,10 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
     boolean prevA = false;
     boolean prevX = false;
 
+    boolean prevUp = false;
+    boolean prevDown = false;
+    double launcherSpeed = 0.84;
+
     double pos = launcherServoInitPos;
     ElapsedTime launchTestingTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     int launchTestingWaitTime = 1000;
@@ -104,7 +108,7 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                     if (inputMagnitude >= MIN_SPEED) {
                         speed = inputMagnitude;
                         angle = Math.toDegrees(Math.atan2(joystickInputY, joystickInputX));
-                        angle -= (currentAngle - 90);
+//                        angle -= (currentAngle - 90);
                     }
                     double maxDiff = maxDiffByDirection.get(prevDirection);
                     if (prevDirection != getClosestDirection(angle)) {
@@ -171,7 +175,9 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                 //Launcher
                 if ((gamepad2.a || gamepad1.a) && !prevA) {
                     if (leftLaunchMotor.getPower() == 0) {
-                        startLauncher();
+//                        startLauncher();
+                        leftLaunchMotor.setPower(-launcherSpeed);
+                        rightLaunchMotor.setPower(launcherSpeed);
                     } else {
                         stopLauncher();
                     }
@@ -190,9 +196,12 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
 
                 //Auto Launch
                 if (gamepad2.y || gamepad1.y) {
-                    startLauncher();
-                    foundVortex = findVortex();
+//                    startLauncher();
+                    leftLaunchMotor.setPower(-launcherSpeed);
+                    rightLaunchMotor.setPower(launcherSpeed);
+                    foundVortex = aimAtVortex();
                     if (foundVortex) {
+                        pos = launcherServo.getPosition();
                         stopRobot();
                         prevSpeed = 0;
                         liftTime.reset();
@@ -200,16 +209,18 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                         continue;
                     } else {
                         stopRobot();
+                        stopLauncher();
                         prevSpeed = 0;
                         continue;
                     }
                 }
 
-                if (backLeftMotor.getPower() > 0 || backRightMotor.getPower() > 0 || frontLeftMotor.getPower() > 0 || frontRightMotor.getPower() > 0) {
+                if (foundVortex && (backLeftMotor.getPower() > 0 || backRightMotor.getPower() > 0 || frontLeftMotor.getPower() > 0 || frontRightMotor.getPower() > 0)) {
                     foundVortex = false;
+                    stopLauncher();
                 }
 
-                if (foundVortex && liftTime.time() >= 1300) {
+                if (foundVortex && liftTime.time() >= 1300 && leftLaunchMotor.getPower() != 0) {
                     liftTime.reset();
                     liftToLaunch();
                 }
@@ -219,11 +230,38 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                     rightLiftServo.setPosition(rightLiftInitPos);
                 }
 
-//            Regular Launcher Adjustment
+                //Regular Launcher Adjustment
                 if (gamepad1.dpad_down || gamepad2.dpad_down) {
                     pos = launcherServoShortPos;
                 } else if (gamepad1.dpad_up || gamepad2.dpad_up) {
                     pos = launcherServoFarPos;
+                }
+
+                //Laumcher Speed Test
+//                if ((gamepad1.dpad_down || gamepad2.dpad_down) && !prevDown) {
+//                    launcherSpeed += 0.01;
+//                    prevDown = true;
+//                } else if (!(gamepad1.dpad_down || gamepad2.dpad_down) && prevDown) {
+//                    prevDown = false;
+//                }
+//                if ((gamepad1.dpad_up || gamepad2.dpad_up) && !prevUp) {
+//                    launcherSpeed -= 0.01;
+//                    prevUp = true;
+//                } else if (!(gamepad1.dpad_up || gamepad2.dpad_up) && prevUp) {
+//                    prevUp = false;
+//                }
+
+                if ((gamepad2.a || gamepad1.a) && !prevA) {
+                    if (leftLaunchMotor.getPower() == 0) {
+//                        startLauncher();
+                        leftLaunchMotor.setPower(-launcherSpeed);
+                        rightLaunchMotor.setPower(launcherSpeed);
+                    } else {
+                        stopLauncher();
+                    }
+                    prevA = true;
+                } else if (!(gamepad2.a || gamepad1.a) && prevA) {
+                    prevA = false;
                 }
 
 //            Launcher Testing
@@ -246,6 +284,8 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                     encoderStartPos.put(leftLaunchMotor, Math.abs(leftLaunchMotor.getCurrentPosition()));
                     encoderStartPos.put(rightLaunchMotor, Math.abs(rightLaunchMotor.getCurrentPosition()));
                 }
+                logData("launcher speed", launcherSpeed);
+
                 logData("left launcher  rpm", leftLaunchTestingRpm);
                 logData("right launcher rpm", rightLaunchTestingRpm);
 

@@ -155,6 +155,13 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
     public static JavaCameraView mOpenCvCameraView;
 
     public static TextView textDataLog;
+    public static Button increaseExposureButt;
+    public static Button decreaseExposureButt;
+    public static TextView exposureText;
+    public static int exposureValue;
+    public static int exposureIncrement = 1;
+    public final static int MIN_EXPOSURE = -12;
+    public final static int MAX_EXPOSURE = 12;
     public static Button calibrateGroundButt;
     public static Button calibrateTapeButt;
     public static boolean calibrateTape;
@@ -314,14 +321,20 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
 //        mOpenCvCameraView.setVisibility(View.VISIBLE);
 //        mOpenCvCameraView.setCvCameraViewListener(this);
         //testing
+        calibrationSP = getSharedPreferences(CALIBRATE_SP, MODE_PRIVATE);
 
         textDataLog = (TextView) findViewById(R.id.textDataLog);
+        increaseExposureButt = (Button) findViewById(R.id.plusExposure);
+        decreaseExposureButt = (Button) findViewById(R.id.minusExposure);
+        exposureText = (TextView) findViewById(R.id.exposureText);
+        exposureValue = calibrationSP.getInt("exposure", 0);
+        exposureText.setText("Exposure: " + exposureValue);
+
+
         calibrateGroundButt = (Button) findViewById(R.id.calibrateGroundButt);
         calibrateTapeButt = (Button) findViewById(R.id.calibrateTapeButt);
-        calibrationSP = getSharedPreferences(CALIBRATE_SP, MODE_PRIVATE);
         calibrateTapeButt.setText("Calibrate Tape\nF: " + (float) ((int) (calibrationSP.getFloat("frontTapeValue", -1000) * 100) / 100.0) + "  B: " + (float) ((int) (calibrationSP.getFloat("backTapeValue", -1000) * 100) / 100.0));
         calibrateGroundButt.setText("Calibrate Floor\nF: " + (float) ((int) (calibrationSP.getFloat("frontGroundValue", -1000) * 100) / 100.0) + "  B: " + (float) ((int) (calibrationSP.getFloat("backGroundValue", -1000) * 100) / 100.0));
-
 
         programmingModeController = new ProgrammingModeControllerImpl(
                 this, (TextView) findViewById(R.id.textRemoteProgrammingMode));
@@ -693,6 +706,38 @@ public class FtcRobotControllerActivity extends Activity { /*testing:*/ //implem
             });
         }
     }
+
+    public void plusExposure(View v) {
+        exposureValue = Math.min(exposureValue + exposureIncrement, MAX_EXPOSURE);
+        SharedPreferences.Editor editor = FtcRobotControllerActivity.calibrationSP.edit();
+        editor.putInt("exposure", exposureValue);
+        editor.apply();
+        exposureText.setText("Exposure: " + exposureValue);
+    }
+
+    public void minusExposure(View v) {
+        exposureValue = Math.max(exposureValue - exposureIncrement, MIN_EXPOSURE);
+        SharedPreferences.Editor editor = FtcRobotControllerActivity.calibrationSP.edit();
+        editor.putInt("exposure", exposureValue);
+        editor.apply();
+        exposureText.setText("Exposure: " + exposureValue);
+    }
+
+    public final static Handler setExposureButtonsClickable = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            increaseExposureButt.setClickable(true);
+            decreaseExposureButt.setClickable(true);
+        }
+    };
+
+    public final static Handler setExposureButtonsUnclickable = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            increaseExposureButt.setClickable(false);
+            decreaseExposureButt.setClickable(false);
+        }
+    };
 
     public void calibrateTape(View v) {
         calibrateTape = true;

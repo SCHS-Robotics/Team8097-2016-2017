@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Rect;
+import android.hardware.Camera;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,6 +23,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -87,12 +91,22 @@ public abstract class BaseOpMode extends LinearOpMode {
     final int launchFarServoWaitTime = 23;//milliseconds
     final int launchShortServoWaitTime = 13;//milliseconds
 
+    final double[][] vortexValues = {//FIRST COLUMN MUST BE INCREASING
+            {0.328, 0.840},
+            {0.370, 0.830},
+            {0.396, 0.758},
+            {0.417, 0.660},
+            {0.438, 0.538},
+            {0.474, 0.408},
+            {0.505, 0.328},
+            {0.547, 0.240}};
+
     final double vortexTargetWidthLong = 0.34;
-    final double vortexTargetWidthShort = 0.4;//TODO
+    final double vortexTargetWidthShort = 0.479;
     final double minVortexWidth = 0.2;
-    final double vortexTargetX = 0.6;
-    final Scalar redHsv = new Scalar(0, 191, 191);//TODO
-    final Scalar blueHsv = new Scalar(170, 191, 100);
+    final double vortexTargetX = 0.54;
+    final Scalar redHsv = new Scalar(243, 188, 228);
+    final Scalar blueHsv = new Scalar(148, 166, 142);
     final Scalar redContrastRgb = new Scalar(0, 0, 255, 255);
     final Scalar blueContrastRgb = new Scalar(255, 0, 0, 255);
 
@@ -121,8 +135,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     public void startLauncher() {
-        leftLaunchMotor.setPower(-0.9);
-        rightLaunchMotor.setPower(0.9);
+        leftLaunchMotor.setPower(-0.84);
+        rightLaunchMotor.setPower(0.84);
     }
 
     public void stopLauncher() {
@@ -132,11 +146,7 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public void liftToLaunch() throws InterruptedException {
         leftLiftServo.setPosition(leftLiftEndPos);
-        if (launcherServo.getPosition() == launcherServoShortPos) {
-            sleep(launchShortServoWaitTime);
-        } else {
-            sleep(launchFarServoWaitTime);
-        }
+        sleep(launcherServoDelay());
         rightLiftServo.setPosition(rightLiftEndPos);
     }
 
@@ -176,17 +186,17 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     public void goLeft(double speed) {
-        backLeftMotor.setPower(speed);
+        backLeftMotor.setPower(speed * 1);
         backRightMotor.setPower(speed);
         frontLeftMotor.setPower(-speed);
-        frontRightMotor.setPower(-speed);
+        frontRightMotor.setPower(-speed * 1);
     }
 
     public void goRight(double speed) {
-        backLeftMotor.setPower(-speed);
+        backLeftMotor.setPower(-speed * 1);
         backRightMotor.setPower(-speed);
         frontLeftMotor.setPower(speed);
-        frontRightMotor.setPower(speed);
+        frontRightMotor.setPower(speed * 1);
     }
 
     public void goDiagonalForwardRight(double speed) {
@@ -379,16 +389,76 @@ public abstract class BaseOpMode extends LinearOpMode {
                 }
             }
         }
+        return fineVortexRotationAdjustment();
+    }
 
-        if (vortexX < vortexTargetX && seesVortex) {
-            spinLeft(0.1);
-            while (vortexX < vortexTargetX && seesVortex && opModeIsActive()) {
+    public boolean aimAtVortex() throws InterruptedException {
+        if (vortexX < vortexTargetX - 0.1 && seesVortex) {
+            spinLeft(0.3);
+            while (vortexX < vortexTargetX - 0.1 && seesVortex && opModeIsActive()) {
                 if (doCancelAutoLaunch())
                     return false;
             }
-        } else if (vortexX > vortexTargetX && seesVortex) {
+        } else if (vortexX > vortexTargetX + 0.1 && seesVortex) {
+            spinRight(0.3);
+            while (vortexX > vortexTargetX + 0.1 && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+        }
+        sleep(150);
+        fineVortexRotationAdjustment();
+
+        if (vortexWidth < vortexValues[0][0] && seesVortex) {
+            goBackward(0.25);
+            while (vortexWidth < vortexValues[0][0] && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+            fineVortexRotationAdjustment();
+        } else if (vortexWidth > vortexValues[vortexValues.length - 1][0] && seesVortex) {
+            goForward(0.25);
+            while (vortexWidth > vortexValues[vortexValues.length - 1][0] && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+            fineVortexRotationAdjustment();
+        }
+        if (seesVortex) {
+            launcherServo.setPosition(launcherPosFromVortexWidth(vortexWidth));
+            sleep(500);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public double launcherPosFromVortexWidth(double vortexWidth) {
+        if (vortexWidth < vortexValues[0][0]) {
+            return vortexValues[0][1];//ERROR
+        }
+        for (int i = 0; i < vortexValues.length - 1; i++) {
+            if (vortexWidth <= vortexValues[i + 1][0]) {
+                return vortexValues[i][1] - ((vortexValues[i][1] - vortexValues[i + 1][1]) / (vortexValues[i + 1][0] - vortexValues[i][0])) * (vortexWidth - vortexValues[i][0]);
+            }
+        }
+        return vortexValues[vortexValues.length - 1][1];//ERROR
+    }
+
+    public int launcherServoDelay() {
+        return (int) (launchShortServoWaitTime + ((launchFarServoWaitTime - launchShortServoWaitTime) / (launcherServoFarPos - launcherServoShortPos)) * (launcherServo.getPosition() - launcherServoShortPos));
+    }
+
+    public boolean fineVortexRotationAdjustment() {
+        if (vortexX < vortexTargetX - 0.02 && seesVortex) {
+            spinLeft(0.1);
+            while (vortexX < vortexTargetX - 0.02 && seesVortex && opModeIsActive()) {
+                if (doCancelAutoLaunch())
+                    return false;
+            }
+        } else if (vortexX > vortexTargetX + 0.02 && seesVortex) {
             spinRight(0.1);
-            while (vortexX > vortexTargetX && seesVortex && opModeIsActive()) {
+            while (vortexX > vortexTargetX + 0.02 && seesVortex && opModeIsActive()) {
                 if (doCancelAutoLaunch())
                     return false;
             }
@@ -402,6 +472,9 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     //OpenCV Stuff
+    Camera camera;
+    List<Camera.Area> meteringAreas = new ArrayList<>(1);
+
     Mat mRgba;
     Scalar mBlobColorRgba;
     Scalar mBlobColorHsv;
@@ -417,6 +490,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     double vortexY;
 
     public void startOpenCV(CameraBridgeViewBase.CvCameraViewListener2 cameraViewListener) {
+        if (FtcRobotControllerActivity.mOpenCvCameraView.isEnabled())
+            FtcRobotControllerActivity.mOpenCvCameraView.disableView();
         FtcRobotControllerActivity.turnOnCameraView.obtainMessage().sendToTarget();
         FtcRobotControllerActivity.mOpenCvCameraView.setCvCameraViewListener(cameraViewListener);
         FtcRobotControllerActivity.mOpenCvCameraView.enableView();
@@ -444,13 +519,31 @@ public abstract class BaseOpMode extends LinearOpMode {
         vortexHeight = 0;
         vortexX = 0;
         vortexY = 0;
+
+        camera = FtcRobotControllerActivity.mOpenCvCameraView.getCamera();
+        Camera.Area meteringArea = new Camera.Area(new Rect(-300, 700, 300, 1000), 1000);//The coordinates are mapped so that (-1000, -1000) is always the top-left corner of the current field of view, and (1000, 1000) is always the bottom-right corner of the current field of view.
+        meteringAreas.clear();
+        meteringAreas.add(meteringArea);
+        Camera.Parameters parameters = camera.getParameters();
+        parameters.setMeteringAreas(meteringAreas);
+        camera.setParameters(parameters);
+        camera.setPreviewCallback(new Camera.PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] data, Camera camera) {
+                FtcRobotControllerActivity.mOpenCvCameraView.onPreviewFrame(data, camera);
+                Camera.Parameters parameters = camera.getParameters();
+                parameters.setMeteringAreas(meteringAreas);
+                parameters.setExposureCompensation(FtcRobotControllerActivity.exposureValue);
+                camera.setParameters(parameters);
+            }
+        });
     }
 
     public Mat processCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
         mDetector.process(mRgba);
         List<MatOfPoint> contours = mDetector.getContours();
-        Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
+        Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 4);
 
         Mat colorLabel = mRgba.submat(4, 68, 4, 68);
         colorLabel.setTo(mBlobColorRgba);
@@ -490,6 +583,12 @@ public abstract class BaseOpMode extends LinearOpMode {
         vortexX = theX / mRgba.width();
         vortexY = theY / mRgba.height();
         seesVortex = doesSeeVortex;
+        if (seesVortex) {
+            meteringAreas.get(0).rect.set((int) ((vortexX - vortexWidth / 2) * 2000 - 1000), (int) ((vortexY) * 2000 - 1000), (int) ((vortexX + vortexWidth / 2) * 2000 - 1000), (int) ((vortexY + vortexHeight / 2) * 2000 - 1000));
+        } else {
+            meteringAreas.get(0).rect.set(-300, 700, 300, 1000);
+        }
+
         return mRgba;
     }
 
