@@ -66,7 +66,7 @@ public class RedBeaconsAutonomous extends BeaconsAutonomous {
 
     @Override
     public void fixPosForFindingTape() throws InterruptedException {
-        moveAlongBeaconWallDistance(-DEFAULT_FORWARD_SPEED, 15);
+        moveAlongBeaconWallDistance(-DEFAULT_FORWARD_SPEED, 25);
     }
 
     @Override

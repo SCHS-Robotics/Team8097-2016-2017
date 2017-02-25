@@ -104,8 +104,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     final double vortexTargetWidthLong = 0.34;
     final double vortexTargetWidthShort = 0.479;
     final double minVortexWidth = 0.2;
-    final double vortexTargetX = 0.54;
-    final Scalar redHsv = new Scalar(243, 188, 228);
+    final double vortexTargetX = 0.52;
+    final Scalar redHsv = new Scalar(243, 166, 166);
     final Scalar blueHsv = new Scalar(148, 166, 142);
     final Scalar redContrastRgb = new Scalar(0, 0, 255, 255);
     final Scalar blueContrastRgb = new Scalar(255, 0, 0, 255);
@@ -468,7 +468,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     public boolean doCancelAutoLaunch() {
-        return (this instanceof CompetitionTeleOp) && ((Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) >= MIN_SPEED || (gamepad2.b || gamepad1.b));
+        return (this instanceof CompetitionTeleOp) && ((Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) >= MIN_SPEED);
     }
 
     //OpenCV Stuff

@@ -34,12 +34,21 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
 
         if (shouldShoot()) {
             collectionMotor.setPower(1);
-            startLauncher();
-            sleep(250);
-            moveAwayFromWallAfterCollecting(DEFAULT_SIDEWAYS_SPEED, 15);
-            turnAwayFromBeacons(DEFAULT_SPIN_SPEED, 90);
             sleep(500);
+            if (this instanceof RedBeaconsShootAutonomous || this instanceof RedBeaconsShoot3Autonomous) {
+                goBackwardDistance(0.5, 20);
+            } else {
+                goBackwardDistance(0.5, 15);
+            }
+            moveAwayFromWallAfterCollecting(DEFAULT_SIDEWAYS_SPEED, 15);
             collectionMotor.setPower(0);
+            startLauncher();
+            if (this instanceof RedBeaconsShootAutonomous || this instanceof RedBeaconsShoot3Autonomous) {
+                goForwardDistance(0.5, 15);
+            } else {
+                goForwardDistance(0.5, 20);
+            }
+            turnAwayFromBeacons(DEFAULT_SPIN_SPEED, 90);
             //fineVortexRotationAdjustment();
             shoot();
             fixPosAfterShooting();
@@ -50,8 +59,8 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
             turnToBeacons(DEFAULT_SPIN_SPEED, 45);
         moveAlongBeaconWallDistance(1, 130);
         turnAwayFromBeacons(DEFAULT_SPIN_SPEED, 45);
-        goToBeaconWall(0.5, closeToWallDistance);
         fixPosForFindingTape();
+        goToBeaconWall(0.5, closeToWallDistance);
         alignWithWall();
         findTapeInward();
         //alignWithWall();
@@ -62,7 +71,7 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
         pushButton();
         moveAlongStartWallDistance(-0.5, 10);
         turnToBeacons(DEFAULT_SPIN_SPEED, 45);
-        moveAlongBeaconWallDistance(-DEFAULT_FORWARD_SPEED, 175);
+        moveAlongBeaconWallDistance(-1, 175);
 
         while (opModeIsActive()) {
             idle();
@@ -103,8 +112,8 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
 //        } else if (angleOffset < -2) {
 //            spinLeftDegrees(0.25, -angleOffset);
 //        }
-        goAwayFromBeaconWall(0.4, beforePushingButtonDistance + 1);
-        goToBeaconWall(0.4, beforePushingButtonDistance + 1);
+        goAwayFromBeaconWall(0.4, beforePushingButtonDistance);
+        goToBeaconWall(0.4, beforePushingButtonDistance);
         stopRobot();
     }
 
@@ -130,15 +139,15 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
         while (getFurthestEncoder() < encoderTicks && opModeIsActive()) {
             if (getRangeDistance() > beforePushingButtonDistance && !adjustedCloser) {
                 if (this instanceof RedBeaconsAutonomous || this instanceof RedBeaconsShoot3Autonomous || this instanceof RedBeaconsShootAutonomous) {
-                    backLeftMotor.setPower(speed);
-                    backRightMotor.setPower(-speed * 0.35);
-                    frontLeftMotor.setPower(speed * 0.35);
+                    backLeftMotor.setPower(speed * 0.8);
+                    backRightMotor.setPower(-speed * 0.55);
+                    frontLeftMotor.setPower(speed * 0.55);
                     frontRightMotor.setPower(-speed);
                 } else {
-                    backLeftMotor.setPower(speed * 0.35);
+                    backLeftMotor.setPower(speed * 0.55);
                     backRightMotor.setPower(-speed);
-                    frontLeftMotor.setPower(speed);
-                    frontRightMotor.setPower(-speed * 0.35);
+                    frontLeftMotor.setPower(speed * 0.8);
+                    frontRightMotor.setPower(-speed * 0.55);
                 }
                 adjustedCloser = true;
                 adjustedFarther = false;
@@ -193,14 +202,14 @@ public abstract class BeaconsAutonomous extends CompetitionAutonomous implements
     public void findTapeRight(int direction) throws InterruptedException {
         sleep(250);
         if (this instanceof RedBeaconsAutonomous || this instanceof RedBeaconsShoot3Autonomous || this instanceof RedBeaconsShootAutonomous) {
-            backLeftMotor.setPower(0.25 * direction);
+            backLeftMotor.setPower(0.25 * direction * 0.9);
             backRightMotor.setPower(-0.25 * direction * 0.85);
             frontLeftMotor.setPower(0.25 * direction * 0.85);
             frontRightMotor.setPower(-0.25 * direction);
         } else {
             backLeftMotor.setPower(0.25 * direction * 0.85);
             backRightMotor.setPower(-0.25 * direction);
-            frontLeftMotor.setPower(0.25 * direction);
+            frontLeftMotor.setPower(0.25 * direction * 0.9);
             frontRightMotor.setPower(-0.25 * direction * 0.85);
         }
         boolean sawFront = false;
