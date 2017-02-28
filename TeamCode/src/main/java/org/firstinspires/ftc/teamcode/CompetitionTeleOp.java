@@ -28,6 +28,7 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
 
     boolean prevA = false;
     boolean prevX = false;
+    boolean prevRB = false;
 
     boolean prevUp = false;
     boolean prevDown = false;
@@ -43,7 +44,7 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
     double prevAngle = 0;
     int prevDirection = 0;
 
-    final static double slowEnough = 0.5;
+    final static double slowEnough = 0.3;
     final static HashMap<Integer, Double> maxDiffByDirection;
 
     static {
@@ -150,11 +151,12 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                     pushButtonTime.reset();
                     leftFlapServo.setPosition(leftFlapEndPos);
                     rightFlapServo.setPosition(rightFlapEndPos);
-                } else if (gamepad1.right_bumper || gamepad2.right_bumper) {
-                    pushButtonTime.reset();
-                    rightFlapServo.setPosition(rightFlapEndPos);
-                    leftFlapServo.setPosition(leftFlapEndPos);
                 }
+//                else if (gamepad1.right_bumper || gamepad2.right_bumper) {
+//                    pushButtonTime.reset();
+//                    rightFlapServo.setPosition(rightFlapEndPos);
+//                    leftFlapServo.setPosition(leftFlapEndPos);
+//                }
                 if (pushButtonTime.time() >= 500) {
                     rightFlapServo.setPosition(rightFlapInitPos);
                     leftFlapServo.setPosition(leftFlapInitPos);
@@ -162,7 +164,7 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
 
                 //Collection
                 if ((gamepad2.x || gamepad1.x) && !prevX) {
-                    if (collectionMotor.getPower() == 0) {
+                    if (collectionMotor.getPower() != 1) {
                         collectionMotor.setPower(1);
                     } else {
                         collectionMotor.setPower(0);
@@ -170,6 +172,17 @@ public abstract class CompetitionTeleOp extends BaseOpMode implements CameraBrid
                     prevX = true;
                 } else if (!(gamepad2.x || gamepad1.x) && prevX) {
                     prevX = false;
+                }
+
+                if ((gamepad2.right_bumper || gamepad1.right_bumper) && !prevRB) {
+                    if (collectionMotor.getPower() != -1) {
+                        collectionMotor.setPower(-1);
+                    } else {
+                        collectionMotor.setPower(0);
+                    }
+                    prevRB = true;
+                } else if (!(gamepad2.right_bumper || gamepad1.right_bumper) && prevRB) {
+                    prevRB = false;
                 }
 
                 //Launcher

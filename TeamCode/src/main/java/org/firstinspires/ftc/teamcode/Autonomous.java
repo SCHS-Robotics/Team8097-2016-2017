@@ -63,7 +63,7 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void spinRightDegrees(double speed, double degrees) throws InterruptedException {
-        degrees -= 2 * (speed / DEFAULT_SPIN_SPEED);//Accounting for encoder/motor delay
+        degrees -= 3 * (speed / DEFAULT_SPIN_SPEED);//Accounting for encoder/motor delay
         resetWheelEncoders();
         spinRight(speed);
         double totalEncoderTicks = degrees * TICKS_PER_DEGREE;
@@ -72,7 +72,7 @@ public abstract class Autonomous extends BaseOpMode {
     }
 
     public void spinLeftDegrees(double speed, double degrees) throws InterruptedException {
-        degrees -= 3 * (speed / DEFAULT_SPIN_SPEED);//Left overshoots more than right???
+        degrees -= 2 * (speed / DEFAULT_SPIN_SPEED);//Left overshoots more than right???
         spinRightDegrees(-speed, degrees);
     }
 

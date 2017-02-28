@@ -5,7 +5,7 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 
-public abstract class CapBallAutonomous extends CompetitionAutonomous implements CameraBridgeViewBase.CvCameraViewListener2 {
+public abstract class JustShootAutonomous extends CompetitionAutonomous implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     @Override
     public int numParticles() {
@@ -23,17 +23,10 @@ public abstract class CapBallAutonomous extends CompetitionAutonomous implements
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        startLauncher();
-        goBackwardDistance(DEFAULT_FORWARD_SPEED, 70);//60
+        goBackwardDistance(DEFAULT_FORWARD_SPEED, 70);
         sleep(500);
         aimAtVortex();
         shoot();
-        sleep(10000);
-        spinRightDegrees(DEFAULT_SPIN_SPEED, 180);
-        goForwardDistance(DEFAULT_FORWARD_SPEED, 90);
-        sleep(2000);
-        goForwardDistance(DEFAULT_FORWARD_SPEED, 10);
-
 
         while (opModeIsActive()) {
             idle();
